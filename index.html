@@ -1445,7 +1445,7 @@ footer {
 // ============================================================
 //  VERSION
 // ============================================================
-const APP_VERSION = 'v1.5.0';
+const APP_VERSION = 'v1.6.0';
 (function() {
   const el = document.getElementById('version-badge');
   if (el) el.textContent = APP_VERSION;
@@ -1846,25 +1846,25 @@ const APP_VERSION = 'v1.5.0';
     ov.classList.add('visible');
 
     setTimeout(() => {
-      // Phase 2 — game logic fires (DOM switches screens)
+      // アニメーションクラスを display:none が解除される前に付与する。
+      // こうすることで要素が visible になった瞬間から from キーフレームが適用され、
+      // opacity:0 / translateY の状態から正しくアニメーションが始まる。
+      const gameView = document.getElementById('game-view');
+      const menuWrap = document.querySelector('.menu-wrap');
+      const target   = enterClass === 'screen-rise' ? gameView : menuWrap;
+      if (target) target.classList.add(enterClass);
+
+      // Phase 2 — game logic fires (display:none 解除 → アニメーション開始)
       triggerFn();
 
-      // Phase 3 — one frame later, start reveal
+      // Phase 3 — overlay フェードアウト (アニメーションはすでに走っている)
       requestAnimationFrame(() => {
-        ov.classList.remove('visible'); // overlay fades out
-
-        // Find newly visible element and animate it in
-        const gameView  = document.getElementById('game-view');
-        const menuWrap  = document.querySelector('.menu-wrap');
-        const target = enterClass === 'screen-rise' ? gameView : menuWrap;
-
+        ov.classList.remove('visible');
         if (target) {
-          target.classList.add(enterClass);
           target.addEventListener('animationend',
             () => target.classList.remove(enterClass), { once: true });
         }
-
-        setTimeout(() => { busy = false; }, 550);
+        setTimeout(() => { busy = false; }, 600);
       });
     }, 360);
   }
