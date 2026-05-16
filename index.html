@@ -952,21 +952,21 @@ footer {
 
 /* New screen rising from the depths (menu → game) */
 .screen-rise {
-  animation: screenRise 0.52s cubic-bezier(0.22,1,0.36,1) forwards;
+  animation: screenRise 0.9s cubic-bezier(0.22,1,0.36,1) forwards;
 }
 
 @keyframes screenRise {
-  from { opacity: 0; transform: translateY(22px); }
+  from { opacity: 0; transform: translateY(40px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 /* New screen descending from the surface (game → menu) */
 .screen-descend {
-  animation: screenDescend 0.52s cubic-bezier(0.22,1,0.36,1) forwards;
+  animation: screenDescend 0.9s cubic-bezier(0.22,1,0.36,1) forwards;
 }
 
 @keyframes screenDescend {
-  from { opacity: 0; transform: translateY(-22px); }
+  from { opacity: 0; transform: translateY(-40px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -1445,7 +1445,7 @@ footer {
 // ============================================================
 //  VERSION
 // ============================================================
-const APP_VERSION = 'v1.6.0';
+const APP_VERSION = 'v1.7.0';
 (function() {
   const el = document.getElementById('version-badge');
   if (el) el.textContent = APP_VERSION;
@@ -1864,7 +1864,7 @@ const APP_VERSION = 'v1.6.0';
           target.addEventListener('animationend',
             () => target.classList.remove(enterClass), { once: true });
         }
-        setTimeout(() => { busy = false; }, 600);
+        setTimeout(() => { busy = false; }, 950);
       });
     }, 360);
   }
