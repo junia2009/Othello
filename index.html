@@ -877,6 +877,71 @@ footer {
   to   { transform: rotate(var(--rb,  6deg)); }
 }
 
+/* ─── Board animations ──────────────────────────────────────────────── */
+
+/* Particle burst on piece placement */
+@keyframes placeBurst {
+  0%   { transform: translate(-50%,-50%) translate(0,0)                   scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%,-50%) translate(var(--bx,0),var(--by,0)) scale(0.4); opacity: 0; }
+}
+
+/* Score +N floating up */
+@keyframes scoreFloat {
+  0%   { transform: translate(-50%,0);     opacity: 1; }
+  65%  { transform: translate(-50%,-26px); opacity: 1; }
+  100% { transform: translate(-50%,-42px); opacity: 0; }
+}
+
+/* Glow burst on a flipped piece */
+.flip-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,230,255,0.60) 0%, rgba(0,160,255,0.20) 55%, transparent 80%);
+  pointer-events: none;
+  z-index: 5;
+  animation: flipGlow 0.5s ease-out forwards;
+}
+
+@keyframes flipGlow {
+  0%   { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* Sonar ring expanding from board center */
+.board-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 40px; height: 40px;
+  transform: translate(-50%,-50%);
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,200,255,0.40);
+  pointer-events: none;
+  z-index: 2;
+  animation: boardRing 6s ease-out infinite;
+}
+
+@keyframes boardRing {
+  0%   { width: 40px;  height: 40px;  opacity: 0.6; }
+  100% { width: 115%;  height: 115%;  opacity: 0; }
+}
+
+/* Cell hover shimmer */
+.cell.playable:hover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(0,210,255,0.18) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  animation: cellHover 0.3s ease-out;
+}
+
+@keyframes cellHover {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 @media (max-width: 480px) {
   h1          { font-size: 1.6rem; }
   .app        { padding: 10px; gap: 10px; }
@@ -1556,6 +1621,159 @@ footer {
   }
   spawnFish();
   setTimeout(scheduleFish, 5000);
+})();
+
+// ============================================================
+//  BOARD ANIMATIONS — MutationObserver driven, no game-logic change
+// ============================================================
+(function initBoardAnimations() {
+  const boardEl = document.getElementById('board');
+  if (!boardEl) return;
+
+  // ── Ambient sonar rings from board center ─────────────────
+  const boardWrap = boardEl.closest('.board-wrap');
+  if (boardWrap) {
+    [0, -3].forEach(delayS => {
+      const ring = document.createElement('div');
+      ring.className = 'board-ring';
+      ring.style.animationDelay = `${delayS}s`;
+      boardWrap.appendChild(ring);
+    });
+  }
+
+  // ── Placement particle burst ──────────────────────────────
+  function spawnPlacementBurst(cell) {
+    const rect = cell.getBoundingClientRect();
+    const cx = rect.left + rect.width  / 2;
+    const cy = rect.top  + rect.height / 2;
+    const NUM = 12;
+    for (let i = 0; i < NUM; i++) {
+      const angle = (i / NUM) * Math.PI * 2 + Math.random() * 0.3;
+      const dist  = 18 + Math.random() * 28;
+      const size  = 2 + Math.random() * 4;
+      const hue   = 180 + Math.random() * 40;
+      const p = document.createElement('div');
+      p.style.cssText = [
+        'position:fixed',
+        `left:${cx}px`, `top:${cy}px`,
+        `width:${size.toFixed(1)}px`, `height:${size.toFixed(1)}px`,
+        'border-radius:50%',
+        `background:hsla(${hue.toFixed(0)},90%,75%,0.95)`,
+        `box-shadow:0 0 ${(size*1.8).toFixed(0)}px hsla(${hue.toFixed(0)},90%,70%,0.7)`,
+        'pointer-events:none',
+        'z-index:300',
+        `--bx:${(Math.cos(angle)*dist).toFixed(1)}px`,
+        `--by:${(Math.sin(angle)*dist).toFixed(1)}px`,
+        `animation:placeBurst ${(0.38 + Math.random()*0.16).toFixed(2)}s ease-out forwards`,
+        `animation-delay:${(i * 0.018).toFixed(3)}s`,
+      ].join(';');
+      document.body.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  // ── Score +N floating text ────────────────────────────────
+  let prevBlack = 2, prevWhite = 2;
+  const numBlackEl = document.getElementById('num-black');
+  const numWhiteEl = document.getElementById('num-white');
+
+  function showScoreFloat(targetEl, delta) {
+    if (delta <= 0) return;
+    const rect = targetEl.getBoundingClientRect();
+    const f = document.createElement('div');
+    f.textContent = `+${delta}`;
+    f.style.cssText = [
+      'position:fixed',
+      `left:${(rect.left + rect.width / 2).toFixed(0)}px`,
+      `top:${rect.top.toFixed(0)}px`,
+      'transform:translate(-50%,0)',
+      'font-size:1.05rem',
+      'font-weight:800',
+      'color:#00eeff',
+      'text-shadow:0 0 12px rgba(0,230,255,0.95)',
+      'pointer-events:none',
+      'z-index:300',
+      'animation:scoreFloat 0.85s ease-out forwards',
+    ].join(';');
+    document.body.appendChild(f);
+    f.addEventListener('animationend', () => f.remove(), { once: true });
+  }
+
+  new MutationObserver(() => {
+    const nb = parseInt(numBlackEl.textContent) || 0;
+    const nw = parseInt(numWhiteEl.textContent) || 0;
+    if (nb > prevBlack) showScoreFloat(numBlackEl, nb - prevBlack);
+    if (nw > prevWhite) showScoreFloat(numWhiteEl, nw - prevWhite);
+    prevBlack = nb; prevWhite = nw;
+  }).observe(numBlackEl.parentElement.parentElement, { subtree: true, childList: true, characterData: true });
+
+  // ── Cascaded flip animation ───────────────────────────────
+  let lastPlace = null;
+
+  new MutationObserver(mutations => {
+    // Pass 1: find newly placed piece to get anchor coordinates
+    let placedCell = null;
+    for (const mut of mutations) {
+      if (mut.type !== 'childList') continue;
+      for (const node of mut.addedNodes) {
+        if (node.nodeType === 1 && node.classList.contains('piece')) {
+          placedCell = mut.target;
+          break;
+        }
+      }
+      if (placedCell) break;
+    }
+
+    if (placedCell) {
+      lastPlace = {
+        r: parseInt(placedCell.dataset.r),
+        c: parseInt(placedCell.dataset.c),
+      };
+      spawnPlacementBurst(placedCell);
+    }
+
+    if (!lastPlace) return;
+
+    // Pass 2: stagger flipped pieces and spawn glow burst
+    for (const mut of mutations) {
+      if (mut.type !== 'attributes' || mut.attributeName !== 'class') continue;
+      const el = mut.target;
+      if (!el.classList.contains('piece')) continue;
+      const old = mut.oldValue || '';
+      const wasBlack = /\bblack\b/.test(old);
+      const wasWhite = /\bwhite\b/.test(old);
+      const isBlack  = el.classList.contains('black');
+      const isWhite  = el.classList.contains('white');
+      const flipped  = (wasBlack && isWhite) || (wasWhite && isBlack);
+      if (!flipped) continue;
+
+      const cell = el.parentElement;
+      if (!cell || !cell.dataset.r) continue;
+      const r = parseInt(cell.dataset.r);
+      const c = parseInt(cell.dataset.c);
+      if (r === lastPlace.r && c === lastPlace.c) continue;
+
+      const dist  = Math.abs(r - lastPlace.r) + Math.abs(c - lastPlace.c);
+      const delay = dist * 60; // ms per manhattan unit
+
+      // Stagger the CSS transition
+      el.style.transitionDelay = `${delay}ms`;
+      setTimeout(() => { el.style.transitionDelay = ''; }, delay + 600);
+
+      // Glow burst timed to coincide with the flip
+      const glow = document.createElement('div');
+      glow.className = 'flip-glow';
+      glow.style.animationDelay = `${delay}ms`;
+      cell.appendChild(glow);
+      glow.addEventListener('animationend', () => glow.remove(), { once: true });
+    }
+  }).observe(boardEl, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class'],
+    attributeOldValue: true,
+  });
 })();
 
 // ============================================================
