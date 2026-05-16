@@ -924,6 +924,44 @@ footer {
   to   { opacity: 1; }
 }
 
+/* ─── Screen transition ─────────────────────────────────────────────── */
+#screen-overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0,100,200,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse at 50% 40%, #062040 0%, #010810 65%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 400;
+  transition: opacity 0.36s ease;
+}
+
+#screen-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* New screen rising from the depths (menu → game) */
+.screen-rise {
+  animation: screenRise 0.52s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+@keyframes screenRise {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* New screen descending from the surface (game → menu) */
+.screen-descend {
+  animation: screenDescend 0.52s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+@keyframes screenDescend {
+  from { opacity: 0; transform: translateY(-22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 480px) {
   h1          { font-size: 1.6rem; }
   .app        { padding: 10px; gap: 10px; }
@@ -1745,6 +1783,96 @@ footer {
     attributeFilter: ['class'],
     attributeOldValue: true,
   });
+})();
+
+// ============================================================
+//  SCREEN TRANSITION — dive into the deep / rise to the surface
+// ============================================================
+(function initScreenTransition() {
+  // Overlay element
+  const ov = document.createElement('div');
+  ov.id = 'screen-overlay';
+  document.body.appendChild(ov);
+
+  let busy = false;
+
+  // Spawn a few extra bubbles rushing upward during dive
+  function rushBubbles() {
+    const container = document.getElementById('bubbles');
+    if (!container) return;
+    for (let i = 0; i < 10; i++) {
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      const size = 5 + Math.random() * 14;
+      b.style.cssText = [
+        `left:${10 + Math.random() * 80}%`,
+        `bottom:${Math.random() * 60}%`,
+        `width:${size}px`, `height:${size}px`,
+        `--op:${(0.35 + Math.random() * 0.4).toFixed(2)}`,
+        `animation-duration:${0.7 + Math.random() * 0.5}s`,
+        `animation-delay:${(Math.random() * 0.25).toFixed(2)}s`,
+      ].join(';');
+      container.appendChild(b);
+      b.addEventListener('animationend', () => b.remove(), { once: true });
+    }
+  }
+
+  // enterClass: animation class for the incoming screen element
+  function runTransition(triggerFn, enterClass) {
+    if (busy) return;
+    busy = true;
+
+    rushBubbles();
+
+    // Phase 1 — overlay fades in
+    ov.classList.add('visible');
+
+    setTimeout(() => {
+      // Phase 2 — game logic fires (DOM switches screens)
+      triggerFn();
+
+      // Phase 3 — one frame later, start reveal
+      requestAnimationFrame(() => {
+        ov.classList.remove('visible'); // overlay fades out
+
+        // Find newly visible element and animate it in
+        const gameView  = document.getElementById('game-view');
+        const menuWrap  = document.querySelector('.menu-wrap');
+        const target = enterClass === 'screen-rise' ? gameView : menuWrap;
+
+        if (target) {
+          target.classList.add(enterClass);
+          target.addEventListener('animationend',
+            () => target.classList.remove(enterClass), { once: true });
+        }
+
+        setTimeout(() => { busy = false; }, 550);
+      });
+    }, 360);
+  }
+
+  function intercept(id, enterClass) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    let passing = false;
+    btn.addEventListener('click', e => {
+      if (passing) return;
+      e.stopImmediatePropagation();
+      runTransition(() => {
+        passing = true;
+        btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        passing = false;
+      }, enterClass);
+    }, true); // capture phase — fires before game logic
+  }
+
+  // menu → game: board rises from the depths
+  intercept('btn-mode-cpu', 'screen-rise');
+  intercept('btn-mode-2p',  'screen-rise');
+
+  // game → menu: menu descends back from the surface
+  intercept('btn-menu',      'screen-descend');
+  intercept('btn-back-menu', 'screen-descend');
 })();
 
 // ============================================================
