@@ -1445,7 +1445,7 @@ footer {
 // ============================================================
 //  VERSION
 // ============================================================
-const APP_VERSION = 'v1.4.0';
+const APP_VERSION = 'v1.5.0';
 (function() {
   const el = document.getElementById('version-badge');
   if (el) el.textContent = APP_VERSION;
@@ -1894,56 +1894,57 @@ const APP_VERSION = 'v1.4.0';
 })();
 
 // ============================================================
-//  SERVICE WORKER — 2回起動で自動アップデート
-//  仕組み:
-//   1. 新 SW が waiting 状態になったら localStorage にカウントを記録
-//   2. 2回目の起動で SKIP_WAITING を送信 → SW が active 化
-//   3. controllerchange イベントで自動リロード（バナー不要）
+//  SERVICE WORKER — 自動アップデート
+//  方針:
+//   ・ページ読み込み時に waiting SW があれば即適用（ゲーム開始前 = 中断なし）
+//   ・セッション中に新 SW が見つかった場合は次回起動まで待機
+//   ・iOS BFCache 対策: visibilitychange でフォアグラウンド復帰を検知
+//     → メニュー画面にいる時だけ適用（ゲーム中は邪魔しない）
 // ============================================================
 if ('serviceWorker' in navigator) {
-  const OPENS_KEY = 'oth-update-opens';
   let reloading = false;
 
-  // SW が active を切り替えたら即リロード（一度だけ）
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (reloading) return;
     reloading = true;
     window.location.reload();
   });
 
-  function applyOrCount(reg) {
-    if (!reg.waiting) return;
+  function applyWaiting(reg) {
+    if (reg?.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+  }
 
-    const opens = parseInt(localStorage.getItem(OPENS_KEY) || '0') + 1;
-
-    if (opens >= 2) {
-      // 2回目: カウンタをリセットして即適用
-      localStorage.removeItem(OPENS_KEY);
-      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-    } else {
-      // 1回目: カウントだけ記録してそのまま使い続ける
-      localStorage.setItem(OPENS_KEY, String(opens));
-    }
+  function isGameActive() {
+    const gv = document.getElementById('game-view');
+    return gv && !gv.classList.contains('hidden');
   }
 
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').then(reg => {
-      // 起動時点で waiting SW が既にいる場合（前回検知済み）
+      // ページ読み込み直後に waiting SW がいれば即適用
+      // (この時点ではゲームはまだ始まっていないので安全)
       if (reg.waiting) {
-        applyOrCount(reg);
+        applyWaiting(reg);
+        return;
       }
 
-      // 今のセッション中に新 SW が見つかった場合
+      // セッション中に新 SW がインストール完了 → 次の起動で適用
       reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          // installed = waiting 状態に入った = 更新準備完了
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            applyOrCount(reg);
-          }
+        const nw = reg.installing;
+        nw.addEventListener('statechange', () => {
+          // waiting 状態になったのを確認するだけ; 適用は次回起動に任せる
         });
       });
     }).catch(() => {});
+  });
+
+  // iOS PWA: BFCache から復帰した時も waiting を検知して適用
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (isGameActive()) return; // ゲーム中は邪魔しない
+    navigator.serviceWorker.getRegistration('./sw.js').then(reg => {
+      applyWaiting(reg);
+    });
   });
 }
 
