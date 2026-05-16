@@ -495,6 +495,42 @@
     display: none !important;
   }
 
+  /* SW update banner */
+  .update-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, #1565c0, #0d47a1);
+    color: #fff;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    z-index: 300;
+    font-size: 0.88rem;
+    font-weight: 500;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    animation: bannerSlideDown 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  @keyframes bannerSlideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .update-banner .update-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .update-banner .btn {
+    padding: 6px 12px;
+    font-size: 0.82rem;
+  }
+
   footer {
     margin-top: 8px;
     font-size: 0.72rem;
@@ -513,6 +549,16 @@
 </style>
 </head>
 <body>
+
+<!-- SW update notification banner (hidden until SW_UPDATED message arrives) -->
+<div id="update-banner" class="update-banner hidden" role="alert" aria-live="polite">
+  <span>新バージョン (<span id="update-version"></span>) が利用可能です</span>
+  <div class="update-actions">
+    <button class="btn primary" id="btn-update-reload">今すぐ更新</button>
+    <button class="btn ghost"   id="btn-update-dismiss">後で</button>
+  </div>
+</div>
+
 <div class="app">
   <header>
     <h1>OTHELLO</h1>
@@ -1092,11 +1138,31 @@
 </script>
 
 <script>
-// Service Worker registration
+// ── Service Worker registration & update flow ────────────────────────────────
 if ('serviceWorker' in navigator) {
+  // register after load to avoid competing with critical resources
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .catch(() => {/* offline-first not available */});
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+
+  // SW sends SW_UPDATED after activate + clients.claim()
+  // → show the update banner so the user can reload at a convenient moment
+  navigator.serviceWorker.addEventListener('message', event => {
+    if (event.data && event.data.type === 'SW_UPDATED') {
+      const banner = document.getElementById('update-banner');
+      const versionEl = document.getElementById('update-version');
+      if (versionEl) versionEl.textContent = event.data.version;
+      if (banner) banner.classList.remove('hidden');
+    }
+  });
+
+  // Wire up banner buttons after DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    const banner   = document.getElementById('update-banner');
+    const btnReload  = document.getElementById('btn-update-reload');
+    const btnDismiss = document.getElementById('btn-update-dismiss');
+    if (btnReload)  btnReload.addEventListener('click',  () => location.reload());
+    if (btnDismiss) btnDismiss.addEventListener('click', () => banner.classList.add('hidden'));
   });
 }
 
