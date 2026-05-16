@@ -759,33 +759,6 @@ h1 {
 
 .modal .actions .btn { flex: 1; }
 
-/* ─── Update banner ─────────────────────────────────────────────────── */
-.update-banner {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  background: linear-gradient(90deg, rgba(0,40,100,0.95), rgba(0,25,70,0.95));
-  color: var(--text);
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  z-index: 300;
-  font-size: 0.86rem;
-  border-bottom: 1px solid rgba(0,160,255,0.3);
-  box-shadow: 0 2px 20px rgba(0,80,200,0.35);
-  animation: bannerSlideDown 0.35s cubic-bezier(0.4,0,0.2,1);
-  backdrop-filter: blur(8px);
-}
-
-@keyframes bannerSlideDown {
-  from { transform: translateY(-100%); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-
-.update-banner .update-actions { display: flex; gap: 8px; flex-shrink: 0; }
-.update-banner .btn { padding: 6px 12px; font-size: 0.8rem; }
-
 /* ─── Misc ──────────────────────────────────────────────────────────── */
 .hidden { display: none !important; }
 
@@ -810,15 +783,6 @@ footer {
 </style>
 </head>
 <body>
-
-<!-- SW update banner -->
-<div id="update-banner" class="update-banner hidden" role="alert" aria-live="polite">
-  <span>新バージョン (<span id="update-version"></span>) が利用可能です</span>
-  <div class="update-actions">
-    <button class="btn primary" id="btn-update-reload">今すぐ更新</button>
-    <button class="btn ghost"   id="btn-update-dismiss">後で</button>
-  </div>
-</div>
 
 <!-- Ocean background layers -->
 <div class="ocean-bg">
@@ -1354,28 +1318,56 @@ footer {
 })();
 
 // ============================================================
-//  SERVICE WORKER + UPDATE FLOW
+//  SERVICE WORKER — 2回起動で自動アップデート
+//  仕組み:
+//   1. 新 SW が waiting 状態になったら localStorage にカウントを記録
+//   2. 2回目の起動で SKIP_WAITING を送信 → SW が active 化
+//   3. controllerchange イベントで自動リロード（バナー不要）
 // ============================================================
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  const OPENS_KEY = 'oth-update-opens';
+  let reloading = false;
+
+  // SW が active を切り替えたら即リロード（一度だけ）
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloading) return;
+    reloading = true;
+    window.location.reload();
   });
 
-  navigator.serviceWorker.addEventListener('message', event => {
-    if (event.data && event.data.type === 'SW_UPDATED') {
-      const banner  = document.getElementById('update-banner');
-      const verEl   = document.getElementById('update-version');
-      if (verEl)  verEl.textContent  = event.data.version;
-      if (banner) banner.classList.remove('hidden');
+  function applyOrCount(reg) {
+    if (!reg.waiting) return;
+
+    const opens = parseInt(localStorage.getItem(OPENS_KEY) || '0') + 1;
+
+    if (opens >= 2) {
+      // 2回目: カウンタをリセットして即適用
+      localStorage.removeItem(OPENS_KEY);
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    } else {
+      // 1回目: カウントだけ記録してそのまま使い続ける
+      localStorage.setItem(OPENS_KEY, String(opens));
     }
-  });
+  }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const banner    = document.getElementById('update-banner');
-    const btnReload = document.getElementById('btn-update-reload');
-    const btnDismiss= document.getElementById('btn-update-dismiss');
-    if (btnReload)   btnReload.addEventListener('click',  ()=>location.reload());
-    if (btnDismiss)  btnDismiss.addEventListener('click', ()=>banner.classList.add('hidden'));
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      // 起動時点で waiting SW が既にいる場合（前回検知済み）
+      if (reg.waiting) {
+        applyOrCount(reg);
+      }
+
+      // 今のセッション中に新 SW が見つかった場合
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          // installed = waiting 状態に入った = 更新準備完了
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            applyOrCount(reg);
+          }
+        });
+      });
+    }).catch(() => {});
   });
 }
 

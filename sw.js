@@ -9,21 +9,27 @@ const ASSETS = [
   './icon-512.png',
 ];
 
-// ── install ──────────────────────────────────────────────────────────────────
-// キャッシュへの書き込みが完全に終わってから skipWaiting する。
-// こうすることで「中途半端なキャッシュで即 active 化」を防ぐ。
+// ── install ───────────────────────────────────────────────────────────────────
+// キャッシュを全部書き終えてから待機状態に入る。
+// skipWaiting は呼ばない → ページが SKIP_WAITING を送るまで waiting のまま。
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE)
       .then(cache => cache.addAll(ASSETS.map(url => new Request(url, { cache: 'reload' }))))
-      .then(() => self.skipWaiting())
   );
 });
 
-// ── activate ─────────────────────────────────────────────────────────────────
-// 1. 旧キャッシュ（CACHE 名が異なるもの）をすべて削除
-// 2. 既存タブの制御を即座に奪取（clients.claim）
-// 3. 制御中の全タブへ SW_UPDATED を通知 → ページ側でバナー表示
+// ── message ───────────────────────────────────────────────────────────────────
+// ページから { type: 'SKIP_WAITING' } を受け取ったら即座に active 化。
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// ── activate ──────────────────────────────────────────────────────────────────
+// 1. 旧キャッシュ削除
+// 2. 既存タブの制御を奪取
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
@@ -31,10 +37,6 @@ self.addEventListener('activate', event => {
         keys.filter(k => k !== CACHE).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
-      .then(() => self.clients.matchAll({ type: 'window' }))
-      .then(clients =>
-        clients.forEach(c => c.postMessage({ type: 'SW_UPDATED', version: VERSION }))
-      )
   );
 });
 
