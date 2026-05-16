@@ -233,6 +233,14 @@ h1 {
   text-transform: uppercase;
 }
 
+.version-badge {
+  margin-top: 8px;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: rgba(0, 180, 220, 0.45);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ─── Panel ─────────────────────────────────────────────────────────── */
 .panel {
   background: var(--panel-bg);
@@ -989,6 +997,7 @@ footer {
         <h1>DEEP OTHELLO</h1>
       </div>
       <div class="subtitle">深海に沈む石たちの戦い</div>
+      <div class="version-badge" id="version-badge"></div>
     </header>
 
     <!-- Mode selection -->
@@ -1431,6 +1440,15 @@ footer {
   document.readyState==='loading'
     ? document.addEventListener('DOMContentLoaded',init)
     : init();
+})();
+
+// ============================================================
+//  VERSION
+// ============================================================
+const APP_VERSION = 'v1.4.0';
+(function() {
+  const el = document.getElementById('version-badge');
+  if (el) el.textContent = APP_VERSION;
 })();
 
 // ============================================================
