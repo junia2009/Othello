@@ -1455,7 +1455,7 @@ footer {
 // ============================================================
 //  VERSION
 // ============================================================
-const APP_VERSION = 'v1.10.0';
+const APP_VERSION = 'v1.11.0';
 (function() {
   const el = document.getElementById('version-badge');
   if (el) el.textContent = APP_VERSION;
@@ -1909,11 +1909,10 @@ const APP_VERSION = 'v1.10.0';
 
 // ============================================================
 //  SERVICE WORKER — 自動アップデート
-//  方針:
-//   ・ページ読み込み時に waiting SW があれば即適用（ゲーム開始前 = 中断なし）
-//   ・セッション中に新 SW が見つかった場合は次回起動まで待機
-//   ・iOS BFCache 対策: visibilitychange でフォアグラウンド復帰を検知
-//     → メニュー画面にいる時だけ適用（ゲーム中は邪魔しない）
+//  ・load 時: waiting SW があれば即適用、なければ update() で強制チェック
+//  ・updatefound: 新 SW が ready になったらメニュー画面なら即適用
+//  ・visibilitychange (iOS BFCache 対策): フォアグラウンド復帰時に
+//    waiting があれば適用、なければ update() で強制チェック
 // ============================================================
 if ('serviceWorker' in navigator) {
   let reloading = false;
@@ -1933,31 +1932,42 @@ if ('serviceWorker' in navigator) {
     return gv && !gv.classList.contains('hidden');
   }
 
+  function watchReg(reg) {
+    reg.addEventListener('updatefound', () => {
+      const nw = reg.installing;
+      nw.addEventListener('statechange', () => {
+        if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+          // 新 SW が waiting 状態に — メニュー画面なら即適用、ゲーム中なら次回に持ち越し
+          if (!isGameActive()) applyWaiting(reg);
+        }
+      });
+    });
+  }
+
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').then(reg => {
-      // ページ読み込み直後に waiting SW がいれば即適用
-      // (この時点ではゲームはまだ始まっていないので安全)
       if (reg.waiting) {
+        // ロード直後に waiting SW あり → 即適用（ゲーム未開始なので安全）
         applyWaiting(reg);
         return;
       }
-
-      // セッション中に新 SW がインストール完了 → 次の起動で適用
-      reg.addEventListener('updatefound', () => {
-        const nw = reg.installing;
-        nw.addEventListener('statechange', () => {
-          // waiting 状態になったのを確認するだけ; 適用は次回起動に任せる
-        });
-      });
+      watchReg(reg);
+      // 明示的に更新チェックを走らせる（iOS では navigation で自動チェックされない）
+      reg.update().catch(() => {});
     }).catch(() => {});
   });
 
-  // iOS PWA: BFCache から復帰した時も waiting を検知して適用
+  // iOS BFCache 対策: ホーム画面からの復帰でも検知・適用する
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState !== 'visible') return;
-    if (isGameActive()) return; // ゲーム中は邪魔しない
-    navigator.serviceWorker.getRegistration('./sw.js').then(reg => {
-      applyWaiting(reg);
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (!reg) return;
+      if (reg.waiting && !isGameActive()) {
+        applyWaiting(reg);
+      } else {
+        // waiting SW がいなくても強制チェック — 新バージョンを発見させる
+        reg.update().catch(() => {});
+      }
     });
   });
 }
