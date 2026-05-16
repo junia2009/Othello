@@ -1445,7 +1445,7 @@ footer {
 // ============================================================
 //  VERSION
 // ============================================================
-const APP_VERSION = 'v1.7.0';
+const APP_VERSION = 'v1.8.0';
 (function() {
   const el = document.getElementById('version-badge');
   if (el) el.textContent = APP_VERSION;
@@ -1818,20 +1818,24 @@ const APP_VERSION = 'v1.7.0';
   function rushBubbles() {
     const container = document.getElementById('bubbles');
     if (!container) return;
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 14; i++) {
       const b = document.createElement('div');
       b.className = 'bubble';
-      const size = 5 + Math.random() * 14;
+      const size  = 5 + Math.random() * 14;
+      const dur   = 1.4 + Math.random() * 1.0; // 遷移全体をカバーする長さ
+      const delay = Math.random() * 0.35;
       b.style.cssText = [
-        `left:${10 + Math.random() * 80}%`,
-        `bottom:${Math.random() * 60}%`,
+        `left:${5 + Math.random() * 90}%`,
+        `bottom:-20px`,
         `width:${size}px`, `height:${size}px`,
-        `--op:${(0.35 + Math.random() * 0.4).toFixed(2)}`,
-        `animation-duration:${0.7 + Math.random() * 0.5}s`,
-        `animation-delay:${(Math.random() * 0.25).toFixed(2)}s`,
+        `--op:${(0.45 + Math.random() * 0.4).toFixed(2)}`,
+        `animation-duration:${dur.toFixed(2)}s`,
+        `animation-delay:${delay.toFixed(2)}s`,
+        `animation-iteration-count:1`, // infinite を上書き → 1回だけ再生して終了
       ].join(';');
       container.appendChild(b);
-      b.addEventListener('animationend', () => b.remove(), { once: true });
+      // animationend は infinite の場合発火しないため setTimeout で確実に削除
+      setTimeout(() => b.remove(), (dur + delay + 0.2) * 1000);
     }
   }
 
