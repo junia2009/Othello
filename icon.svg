@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- App background -->
+  <rect width="512" height="512" rx="96" fill="#1b5e20"/>
+  <!-- Board background -->
+  <rect x="48" y="48" width="416" height="416" rx="24" fill="#2e7d32"/>
+  <!-- Grid lines (7 vertical + 7 horizontal) -->
+  <g stroke="#1b5e20" stroke-width="3" opacity="0.7">
+    <line x1="100" y1="48" x2="100" y2="464"/>
+    <line x1="152" y1="48" x2="152" y2="464"/>
+    <line x1="204" y1="48" x2="204" y2="464"/>
+    <line x1="256" y1="48" x2="256" y2="464"/>
+    <line x1="308" y1="48" x2="308" y2="464"/>
+    <line x1="360" y1="48" x2="360" y2="464"/>
+    <line x1="412" y1="48" x2="412" y2="464"/>
+    <line x1="48" y1="100" x2="464" y2="100"/>
+    <line x1="48" y1="152" x2="464" y2="152"/>
+    <line x1="48" y1="204" x2="464" y2="204"/>
+    <line x1="48" y1="256" x2="464" y2="256"/>
+    <line x1="48" y1="308" x2="464" y2="308"/>
+    <line x1="48" y1="360" x2="464" y2="360"/>
+    <line x1="48" y1="412" x2="464" y2="412"/>
+  </g>
+  <!-- Star points -->
+  <g fill="#1b5e20">
+    <circle cx="152" cy="152" r="7"/>
+    <circle cx="360" cy="152" r="7"/>
+    <circle cx="256" cy="256" r="7"/>
+    <circle cx="152" cy="360" r="7"/>
+    <circle cx="360" cy="360" r="7"/>
+  </g>
+  <!-- White pieces -->
+  <circle cx="230" cy="230" r="44" fill="url(#wg)"/>
+  <circle cx="282" cy="282" r="44" fill="url(#wg)"/>
+  <!-- Black pieces -->
+  <circle cx="282" cy="230" r="44" fill="url(#bg)"/>
+  <circle cx="230" cy="282" r="44" fill="url(#bg)"/>
+  <!-- Gradients for 3D effect -->
+  <defs>
+    <radialGradient id="wg" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#b0bec5"/>
+    </radialGradient>
+    <radialGradient id="bg" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#555555"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </radialGradient>
+  </defs>
+</svg>

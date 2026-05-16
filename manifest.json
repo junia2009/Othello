@@ -1,0 +1,48 @@
+{
+  "name": "Othello Web Game",
+  "short_name": "Othello",
+  "description": "オセロ（リバーシ）ウェブゲーム — CPU対戦・2人対戦対応",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f2027",
+  "theme_color": "#1b5e20",
+  "lang": "ja",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "CPU対戦",
+      "short_name": "CPU戦",
+      "description": "CPUと対戦する",
+      "url": "./?mode=cpu"
+    },
+    {
+      "name": "2人対戦",
+      "short_name": "2人戦",
+      "description": "2人で対戦する",
+      "url": "./?mode=2p"
+    }
+  ]
+}

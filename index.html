@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Othello Web Game</title>
+<meta name="description" content="オセロ（リバーシ）ウェブゲーム — CPU対戦・2人対戦対応">
+<meta name="theme-color" content="#1b5e20">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Othello">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root {
     --board-bg: #2e7d32;
@@ -1079,6 +1088,50 @@
   } else {
     init();
   }
+})();
+</script>
+
+<script>
+// Service Worker registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .catch(() => {/* offline-first not available */});
+  });
+}
+
+// Generate PNG icons for PWA (used by apple-touch-icon and manifest fallback)
+(function generateIcons() {
+  const SVG_SRC = 'icon.svg';
+  const sizes = [192, 512];
+  function renderIcon(size) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, size, size);
+        canvas.toBlob(blob => resolve({ size, blob }), 'image/png');
+      };
+      img.onerror = () => resolve(null);
+      img.src = SVG_SRC;
+    });
+  }
+  // Only generate and cache if service worker is active (for caching generated icons)
+  // Icons are pre-referenced in manifest; generation here ensures apple-touch-icon works
+  // when browsing locally without a build step.
+  Promise.all(sizes.map(renderIcon)).then(results => {
+    results.forEach(result => {
+      if (!result) return;
+      const { size, blob } = result;
+      const url = URL.createObjectURL(blob);
+      if (size === 192) {
+        const link = document.querySelector('link[rel="apple-touch-icon"]');
+        if (link) link.href = url;
+      }
+    });
+  });
 })();
 </script>
 </body>
