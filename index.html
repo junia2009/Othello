@@ -908,24 +908,6 @@ footer {
   100% { transform: scale(2.6); opacity: 0; }
 }
 
-/* Sonar ring expanding from board center */
-.board-ring {
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 40px; height: 40px;
-  transform: translate(-50%,-50%);
-  border-radius: 50%;
-  border: 1.5px solid rgba(0,200,255,0.40);
-  pointer-events: none;
-  z-index: 2;
-  animation: boardRing 6s ease-out infinite;
-}
-
-@keyframes boardRing {
-  0%   { width: 40px;  height: 40px;  opacity: 0.6; }
-  100% { width: 115%;  height: 115%;  opacity: 0; }
-}
-
 /* Cell hover shimmer */
 .cell.playable:hover::before {
   content: '';
@@ -1629,17 +1611,6 @@ footer {
 (function initBoardAnimations() {
   const boardEl = document.getElementById('board');
   if (!boardEl) return;
-
-  // ── Ambient sonar rings from board center ─────────────────
-  const boardWrap = boardEl.closest('.board-wrap');
-  if (boardWrap) {
-    [0, -3].forEach(delayS => {
-      const ring = document.createElement('div');
-      ring.className = 'board-ring';
-      ring.style.animationDelay = `${delayS}s`;
-      boardWrap.appendChild(ring);
-    });
-  }
 
   // ── Placement particle burst ──────────────────────────────
   function spawnPlacementBurst(cell) {
