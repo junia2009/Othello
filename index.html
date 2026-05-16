@@ -18,17 +18,17 @@
    DEEP SEA OTHELLO — Design System
    ===================================================================== */
 :root {
-  /* Ocean palette */
-  --abyss:        #010810;
-  --deep:         #020d1a;
-  --mid-ocean:    #041424;
-  --surface:      #062040;
+  /* Ocean palette — slightly brighter than v1 */
+  --abyss:        #041830;
+  --deep:         #061e38;
+  --mid-ocean:    #081f3a;
+  --surface:      #0c2850;
 
   /* Board */
-  --board-bg:     #060f1e;
-  --board-line:   rgba(0, 160, 220, 0.12);
-  --cell-bg:      #050e1c;
-  --cell-hover:   #0a1e35;
+  --board-bg:     #071422;
+  --board-line:   rgba(0, 170, 230, 0.16);
+  --cell-bg:      #060e1c;
+  --cell-hover:   #0d2040;
 
   /* Bioluminescence */
   --glow-cyan:    #00d4ff;
@@ -40,10 +40,10 @@
   --obsidian-lo:  #000810;
 
   /* UI */
-  --panel-bg:     rgba(2, 18, 38, 0.82);
-  --panel-border: rgba(0, 150, 220, 0.2);
-  --text:         #a8d8ee;
-  --text-muted:   #3d6a80;
+  --panel-bg:     rgba(5, 22, 48, 0.88);
+  --panel-border: rgba(0, 170, 240, 0.25);
+  --text:         #b8e4f4;
+  --text-muted:   #5080a0;
   --accent:       #00d4ff;
 
   /* Hint */
@@ -77,9 +77,9 @@ html, body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 120% 60% at 50% 100%, #031020 0%, transparent 70%),
-    radial-gradient(ellipse 80% 40% at 20% 80%,  #020c18 0%, transparent 60%),
-    linear-gradient(to bottom, #031222 0%, #010810 40%, #000508 100%);
+    radial-gradient(ellipse 120% 60% at 50% 100%, #041428 0%, transparent 70%),
+    radial-gradient(ellipse 80% 40% at 20% 80%,  #051828 0%, transparent 60%),
+    linear-gradient(to bottom, #0a2040 0%, #041830 35%, #021020 100%);
 }
 
 /* Light caustics filtering from above */
@@ -87,19 +87,36 @@ html, body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 80px 500px at 18% 0%, rgba(0,100,200,0.07) 0%, transparent 100%),
-    radial-gradient(ellipse 60px 400px at 42% 0%, rgba(0,140,255,0.05) 0%, transparent 100%),
-    radial-gradient(ellipse 100px 600px at 70% 0%, rgba(0,80,180,0.06) 0%, transparent 100%),
-    radial-gradient(ellipse 50px 350px at 90% 0%, rgba(0,120,220,0.04) 0%, transparent 100%);
+    radial-gradient(ellipse 90px 520px at 18% 0%, rgba(0,140,255,0.18) 0%, transparent 100%),
+    radial-gradient(ellipse 70px 420px at 42% 0%, rgba(0,170,255,0.14) 0%, transparent 100%),
+    radial-gradient(ellipse 110px 620px at 68% 0%, rgba(0,120,220,0.16) 0%, transparent 100%),
+    radial-gradient(ellipse 60px 380px at 88% 0%, rgba(0,150,255,0.12) 0%, transparent 100%);
   animation: causticsShift 18s ease-in-out infinite alternate;
-  opacity: 0.9;
 }
 
 @keyframes causticsShift {
-  0%   { transform: scaleX(1)    skewX(0deg); opacity: 0.6; }
-  33%  { transform: scaleX(1.04) skewX(1deg); opacity: 0.9; }
-  66%  { transform: scaleX(0.97) skewX(-1deg); opacity: 0.7; }
-  100% { transform: scaleX(1.02) skewX(0.5deg); opacity: 1; }
+  0%   { transform: scaleX(1)    skewX(0deg);   opacity: 0.7; }
+  33%  { transform: scaleX(1.05) skewX(1.2deg); opacity: 1; }
+  66%  { transform: scaleX(0.97) skewX(-1deg);  opacity: 0.8; }
+  100% { transform: scaleX(1.03) skewX(0.6deg); opacity: 1; }
+}
+
+/* Animated light ray shafts from the surface */
+.light-rays {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(172deg, rgba(0,150,255,0.11) 0%, transparent 55%) 15%  0 / 130px 100% no-repeat,
+    linear-gradient(168deg, rgba(0,170,255,0.08) 0%, transparent 65%) 38%  0 / 90px  100% no-repeat,
+    linear-gradient(175deg, rgba(0,140,240,0.10) 0%, transparent 50%) 63%  0 / 160px 100% no-repeat,
+    linear-gradient(170deg, rgba(0,130,220,0.07) 0%, transparent 45%) 84%  0 / 70px  100% no-repeat;
+  animation: rayDrift 20s ease-in-out infinite alternate;
+}
+
+@keyframes rayDrift {
+  0%   { transform: translateX(0)    scaleX(1);    opacity: 0.75; }
+  50%  { transform: translateX(14px) scaleX(1.06); opacity: 1; }
+  100% { transform: translateX(-8px) scaleX(0.97); opacity: 0.85; }
 }
 
 /* Bubbles & particles are injected by JS */
@@ -160,6 +177,23 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+/* Menu wrapper — centers title + mode panel vertically */
+.menu-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px 0 50px;
+}
+
+/* Collapse menu when game is active */
+.app:has(#game-view:not(.hidden)) .menu-wrap {
+  display: none;
 }
 
 /* ─── Header / Title ────────────────────────────────────────────────── */
@@ -772,6 +806,77 @@ footer {
   text-transform: uppercase;
 }
 
+/* ─── Jellyfish ─────────────────────────────────────────────────────── */
+.jellyfish {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  animation: jellyfishFloat linear infinite;
+}
+
+@keyframes jellyfishFloat {
+  0%   { transform: translateY(108vh) translateX(0);              opacity: 0; }
+  5%   { opacity: 1; }
+  38%  { transform: translateY(68vh)  translateX(var(--sw1,12px)); }
+  65%  { transform: translateY(38vh)  translateX(var(--sw2,-15px)); }
+  92%  { opacity: 0.85; }
+  100% { transform: translateY(-14vh) translateX(var(--sw3,6px)); opacity: 0; }
+}
+
+.jellyfish svg {
+  animation: jellyPulse 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(100,200,255,0.7));
+  transform-origin: center 40%;
+  display: block;
+}
+
+@keyframes jellyPulse {
+  0%,100% { transform: scaleY(1)    scaleX(1); }
+  40%     { transform: scaleY(0.84) scaleX(1.11); }
+  70%     { transform: scaleY(1.07) scaleX(0.96); }
+}
+
+/* ─── Bioluminescent glow spots ─────────────────────────────────────── */
+.glow-spot {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: spotPulse ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes spotPulse {
+  0%,100% { transform: scale(1);    opacity: 0.22; }
+  50%     { transform: scale(2.2);  opacity: 0.85; }
+}
+
+/* ─── Coral row (bottom decoration) ────────────────────────────────── */
+.coral-row {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  pointer-events: none;
+  z-index: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 8%;
+  gap: 0;
+  opacity: 0.55;
+}
+
+.coral-piece {
+  flex-shrink: 0;
+  animation: coralSway ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+
+@keyframes coralSway {
+  from { transform: rotate(var(--ra, -6deg)); }
+  to   { transform: rotate(var(--rb,  6deg)); }
+}
+
 @media (max-width: 480px) {
   h1          { font-size: 1.6rem; }
   .app        { padding: 10px; gap: 10px; }
@@ -787,20 +892,22 @@ footer {
 <!-- Ocean background layers -->
 <div class="ocean-bg">
   <div class="caustics"></div>
+  <div class="light-rays"></div>
   <div id="particles"></div>
   <div id="bubbles"></div>
 </div>
 
 <div class="app">
-  <header>
-    <div class="title-wrap">
-      <h1>DEEP OTHELLO</h1>
-    </div>
-    <div class="subtitle">深海に沈む石たちの戦い</div>
-  </header>
+  <div class="menu-wrap">
+    <header>
+      <div class="title-wrap">
+        <h1>DEEP OTHELLO</h1>
+      </div>
+      <div class="subtitle">深海に沈む石たちの戦い</div>
+    </header>
 
-  <!-- Mode selection -->
-  <section id="mode-select" class="panel">
+    <!-- Mode selection -->
+    <section id="mode-select" class="panel">
     <div class="difficulty-row">
       <div class="label">対戦モードを選択</div>
       <div class="mode-buttons">
@@ -817,6 +924,7 @@ footer {
       </div>
     </div>
   </section>
+  </div><!-- /.menu-wrap -->
 
   <!-- Game view -->
   <section id="game-view" class="hidden">
@@ -1244,36 +1352,38 @@ footer {
 //  OCEAN ATMOSPHERE
 // ============================================================
 (function initOcean() {
-  // --- Bubbles ---
+  const oceanBg = document.querySelector('.ocean-bg');
+
+  // --- Bubbles (more + brighter) ---
   const bubblesEl = document.getElementById('bubbles');
-  for (let i = 0; i < 28; i++) {
+  for (let i = 0; i < 42; i++) {
     const b = document.createElement('div');
     b.className = 'bubble';
-    const size = 4 + Math.random() * 14;
+    const size = 3 + Math.random() * 16;
     b.style.cssText = [
       `left:${Math.random()*100}%`,
       `width:${size}px`,
       `height:${size}px`,
-      `--op:${(0.1 + Math.random()*0.35).toFixed(2)}`,
+      `--op:${(0.15 + Math.random()*0.45).toFixed(2)}`,
       `animation-duration:${5 + Math.random()*10}s`,
-      `animation-delay:${(-Math.random()*12).toFixed(1)}s`,
+      `animation-delay:${(-Math.random()*14).toFixed(1)}s`,
     ].join(';');
     bubblesEl.appendChild(b);
   }
 
   // --- Plankton particles ---
   const particlesEl = document.getElementById('particles');
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 50; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
-    const size = 1 + Math.random() * 2.5;
+    const size = 1 + Math.random() * 3;
     p.style.cssText = [
       `left:${Math.random()*100}%`,
       `top:${Math.random()*100}%`,
       `width:${size}px`,
       `height:${size}px`,
-      `--op:${(0.05 + Math.random()*0.12).toFixed(2)}`,
-      `--op2:${(0.1  + Math.random()*0.2).toFixed(2)}`,
+      `--op:${(0.06 + Math.random()*0.16).toFixed(2)}`,
+      `--op2:${(0.12 + Math.random()*0.25).toFixed(2)}`,
       `--dx:${(-15 + Math.random()*30).toFixed(1)}px`,
       `--dy:${(-20 + Math.random()*40).toFixed(1)}px`,
       `animation-duration:${8 + Math.random()*14}s`,
@@ -1281,6 +1391,137 @@ footer {
     ].join(';');
     particlesEl.appendChild(p);
   }
+
+  // --- Bioluminescent glow spots ---
+  for (let i = 0; i < 20; i++) {
+    const spot = document.createElement('div');
+    spot.className = 'glow-spot';
+    const size = 2 + Math.random() * 5;
+    const hue = (170 + Math.random() * 70).toFixed(0);
+    const dur  = (3 + Math.random() * 5).toFixed(1);
+    spot.style.cssText = [
+      `width:${size.toFixed(1)}px`,
+      `height:${size.toFixed(1)}px`,
+      `left:${Math.random()*98}%`,
+      `top:${10 + Math.random()*80}%`,
+      `background:hsla(${hue},90%,75%,0.85)`,
+      `box-shadow:0 0 ${(size*2.5).toFixed(0)}px ${(size*1.2).toFixed(0)}px hsla(${hue},90%,70%,0.55)`,
+      `animation-duration:${dur}s`,
+      `animation-delay:${(-Math.random()*parseFloat(dur)).toFixed(1)}s`,
+    ].join(';');
+    oceanBg.appendChild(spot);
+  }
+
+  // --- Jellyfish ---
+  const jellyHues = [188, 205, 225, 265, 195, 215];
+  for (let i = 0; i < 5; i++) {
+    const jelly = document.createElement('div');
+    jelly.className = 'jellyfish';
+    const hue  = jellyHues[i % jellyHues.length] + (Math.random() * 16 - 8);
+    const size = 22 + Math.random() * 30;
+    const x    = 5 + Math.random() * 88;
+    const dur  = 20 + Math.random() * 16;
+    const delay = -(Math.random() * dur);
+    const sw1 = ((-22 + Math.random()*44)).toFixed(0) + 'px';
+    const sw2 = ((-22 + Math.random()*44)).toFixed(0) + 'px';
+    const sw3 = ((-12 + Math.random()*24)).toFixed(0) + 'px';
+
+    const bell   = `hsla(${hue},78%,68%,0.40)`;
+    const rim    = `hsla(${hue},82%,78%,0.50)`;
+    const tent   = `hsla(${hue},72%,62%,0.32)`;
+    const glow   = `hsla(${hue},88%,76%,0.20)`;
+    const svgW   = size;
+    const svgH   = size * 1.9;
+
+    // Build tentacles
+    const numT = 5 + Math.floor(Math.random() * 4);
+    let tentSVG = '';
+    for (let t = 0; t < numT; t++) {
+      const tx  = svgW * 0.1 + (svgW * 0.8 / (numT - 1)) * t;
+      const len = size * 0.75 + Math.random() * size * 0.65;
+      const q   = (-18 + Math.random() * 36).toFixed(0);
+      tentSVG += `<path d="M${tx.toFixed(1)},${(size*0.82).toFixed(1)} Q${(tx + +q).toFixed(1)},${(size*0.82 + len*0.5).toFixed(1)} ${(tx + +q*0.45).toFixed(1)},${(size*0.82+len).toFixed(1)}" stroke="${tent}" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
+    }
+
+    // Bioluminescent spots
+    let spotSVG = '';
+    for (let s = 0; s < 4 + Math.floor(Math.random()*4); s++) {
+      const sx = (svgW*0.2 + Math.random()*svgW*0.6).toFixed(1);
+      const sy = (size*0.12 + Math.random()*size*0.55).toFixed(1);
+      const sr = (0.9 + Math.random()*2.4).toFixed(1);
+      spotSVG += `<circle cx="${sx}" cy="${sy}" r="${sr}" fill="rgba(200,255,255,0.85)"/>`;
+    }
+
+    jelly.innerHTML = `<svg width="${svgW.toFixed(0)}" height="${svgH.toFixed(0)}" viewBox="0 0 ${svgW.toFixed(0)} ${svgH.toFixed(0)}" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="${(svgW/2).toFixed(1)}" cy="${(size*0.44).toFixed(1)}" rx="${(svgW*0.54).toFixed(1)}" ry="${(size*0.50).toFixed(1)}" fill="${glow}"/>
+      <ellipse cx="${(svgW/2).toFixed(1)}" cy="${(size*0.40).toFixed(1)}" rx="${(svgW*0.43).toFixed(1)}" ry="${(size*0.40).toFixed(1)}" fill="${bell}"/>
+      <ellipse cx="${(svgW/2).toFixed(1)}" cy="${(size*0.80).toFixed(1)}" rx="${(svgW*0.43).toFixed(1)}" ry="${(size*0.10).toFixed(1)}" fill="${rim}"/>
+      ${tentSVG}
+      ${spotSVG}
+      <ellipse cx="${(svgW*0.35).toFixed(1)}" cy="${(size*0.18).toFixed(1)}" rx="${(svgW*0.11).toFixed(1)}" ry="${(size*0.07).toFixed(1)}" fill="rgba(255,255,255,0.32)"/>
+    </svg>`;
+
+    jelly.style.cssText = [
+      `left:${x.toFixed(1)}%`,
+      `--sw1:${sw1}`, `--sw2:${sw2}`, `--sw3:${sw3}`,
+      `animation-duration:${dur.toFixed(1)}s`,
+      `animation-delay:${delay.toFixed(1)}s`,
+    ].join(';');
+    jelly.querySelector('svg').style.animationDelay = `${(-Math.random()*2.4).toFixed(1)}s`;
+    oceanBg.appendChild(jelly);
+  }
+
+  // --- Coral (bottom decoration) ---
+  const coralRow = document.createElement('div');
+  coralRow.className = 'coral-row';
+  const coralColors = [
+    ['#a02040','#c03050'],['#b04010','#d06020'],
+    ['#205080','#3070a0'],['#301880','#5030b0'],
+    ['#108050','#20a070'],
+  ];
+  const coralTypes = [
+    (w, h, c1, c2) => // branching coral
+      `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" fill="none">
+        <line x1="${w/2}" y1="${h}" x2="${w/2}" y2="${h*0.35}" stroke="${c1}" stroke-width="3" stroke-linecap="round"/>
+        <line x1="${w/2}" y1="${h*0.65}" x2="${w*0.2}" y2="${h*0.30}" stroke="${c1}" stroke-width="2" stroke-linecap="round"/>
+        <line x1="${w/2}" y1="${h*0.50}" x2="${w*0.78}" y2="${h*0.20}" stroke="${c1}" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="${w/2}" cy="${h*0.33}" r="3" fill="${c2}"/>
+        <circle cx="${w*0.2}" cy="${h*0.28}" r="2.5" fill="${c2}"/>
+        <circle cx="${w*0.78}" cy="${h*0.18}" r="2.5" fill="${c2}"/>
+      </svg>`,
+    (w, h, c1, c2) => // fan coral
+      `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" fill="none">
+        <ellipse cx="${w/2}" cy="${h*0.38}" rx="${w*0.42}" ry="${h*0.35}" stroke="${c1}" stroke-width="1.5" fill="${c1}22"/>
+        <line x1="${w/2}" y1="${h}" x2="${w/2}" y2="${h*0.7}" stroke="${c1}" stroke-width="3" stroke-linecap="round"/>
+        <path d="M${w*0.12},${h*0.55} Q${w*0.3},${h*0.1} ${w/2},${h*0.08} Q${w*0.7},${h*0.1} ${w*0.88},${h*0.55}" stroke="${c2}" stroke-width="1" fill="none"/>
+      </svg>`,
+    (w, h, c1, c2) => // round anemone
+      `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" fill="none">
+        ${Array.from({length:7},(_,k)=>{const a=(k/7)*Math.PI*2;const bx=w/2+Math.cos(a)*w*0.3;const by=h*0.45+Math.sin(a)*h*0.28;return`<ellipse cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" rx="3.5" ry="5" fill="${c2}" transform="rotate(${(a*180/Math.PI).toFixed(0)},${bx.toFixed(1)},${by.toFixed(1)})"/>`}).join('')}
+        <circle cx="${w/2}" cy="${h*0.45}" r="${w*0.18}" fill="${c1}"/>
+        <line x1="${w/2}" y1="${h*0.63}" x2="${w/2}" y2="${h}" stroke="${c1}" stroke-width="3"/>
+      </svg>`,
+  ];
+  const numCorals = 10 + Math.floor(Math.random()*5);
+  for (let i = 0; i < numCorals; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'coral-piece';
+    const [c1,c2] = coralColors[Math.floor(Math.random()*coralColors.length)];
+    const type = coralTypes[Math.floor(Math.random()*coralTypes.length)];
+    const w = 24 + Math.random()*28;
+    const h = 40 + Math.random()*50;
+    const ra = (-8 + Math.random()*4).toFixed(0) + 'deg';
+    const rb = (4 + Math.random()*8).toFixed(0) + 'deg';
+    piece.innerHTML = type(w, h, c1, c2);
+    piece.style.cssText = [
+      `--ra:${ra}`,`--rb:${rb}`,
+      `animation-duration:${(3+Math.random()*3).toFixed(1)}s`,
+      `animation-delay:${(-Math.random()*4).toFixed(1)}s`,
+      `margin-left:${(Math.random()*12).toFixed(0)}px`,
+    ].join(';');
+    coralRow.appendChild(piece);
+  }
+  document.body.appendChild(coralRow);
 
   // --- Occasional fish ---
   function spawnFish() {
@@ -1290,7 +1531,6 @@ footer {
     const size = 18 + Math.random() * 22;
     const y = 10 + Math.random() * 80;
     const dur = 8 + Math.random() * 12;
-    // Simple SVG fish shape
     const color = ['#1a6a8a','#0d4a6e','#1a8a7a','#0a5a7a'][Math.floor(Math.random()*4)];
     fish.innerHTML = `<svg width="${size*2}" height="${size}" viewBox="0 0 40 20" fill="none">
       <ellipse cx="18" cy="10" rx="14" ry="7" fill="${color}" opacity="0.7"/>
@@ -1305,16 +1545,17 @@ footer {
       `animation-duration:${dur}s`,
       `transform: scaleX(${fromRight ? -1 : 1})`,
     ].join(';');
-    document.querySelector('.ocean-bg').appendChild(fish);
+    oceanBg.appendChild(fish);
     fish.addEventListener('animationend', ()=>fish.remove(), {once:true});
   }
 
-  // Spawn a fish every 12-20 seconds
+  // Spawn a fish every 10-18 seconds
   function scheduleFish() {
-    const delay = 12000 + Math.random() * 8000;
+    const delay = 10000 + Math.random() * 8000;
     setTimeout(()=>{ spawnFish(); scheduleFish(); }, delay);
   }
-  setTimeout(scheduleFish, 3000);
+  spawnFish();
+  setTimeout(scheduleFish, 5000);
 })();
 
 // ============================================================
