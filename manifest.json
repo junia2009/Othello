@@ -1,13 +1,13 @@
 {
-  "name": "Othello Web Game",
-  "short_name": "Othello",
-  "description": "オセロ（リバーシ）ウェブゲーム — CPU対戦・2人対戦対応",
+  "name": "Deep Othello",
+  "short_name": "Deep Othello",
+  "description": "深海に沈む石たちの戦い — Deep Sea Othello",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0f2027",
-  "theme_color": "#1b5e20",
+  "background_color": "#010810",
+  "theme_color": "#020d1a",
   "lang": "ja",
   "categories": ["games", "entertainment"],
   "icons": [

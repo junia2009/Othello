@@ -1,48 +1,105 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- App background -->
-  <rect width="512" height="512" rx="96" fill="#1b5e20"/>
-  <!-- Board background -->
-  <rect x="48" y="48" width="416" height="416" rx="24" fill="#2e7d32"/>
-  <!-- Grid lines (7 vertical + 7 horizontal) -->
-  <g stroke="#1b5e20" stroke-width="3" opacity="0.7">
-    <line x1="100" y1="48" x2="100" y2="464"/>
-    <line x1="152" y1="48" x2="152" y2="464"/>
-    <line x1="204" y1="48" x2="204" y2="464"/>
-    <line x1="256" y1="48" x2="256" y2="464"/>
-    <line x1="308" y1="48" x2="308" y2="464"/>
-    <line x1="360" y1="48" x2="360" y2="464"/>
-    <line x1="412" y1="48" x2="412" y2="464"/>
-    <line x1="48" y1="100" x2="464" y2="100"/>
-    <line x1="48" y1="152" x2="464" y2="152"/>
-    <line x1="48" y1="204" x2="464" y2="204"/>
-    <line x1="48" y1="256" x2="464" y2="256"/>
-    <line x1="48" y1="308" x2="464" y2="308"/>
-    <line x1="48" y1="360" x2="464" y2="360"/>
-    <line x1="48" y1="412" x2="464" y2="412"/>
-  </g>
-  <!-- Star points -->
-  <g fill="#1b5e20">
-    <circle cx="152" cy="152" r="7"/>
-    <circle cx="360" cy="152" r="7"/>
-    <circle cx="256" cy="256" r="7"/>
-    <circle cx="152" cy="360" r="7"/>
-    <circle cx="360" cy="360" r="7"/>
-  </g>
-  <!-- White pieces -->
-  <circle cx="230" cy="230" r="44" fill="url(#wg)"/>
-  <circle cx="282" cy="282" r="44" fill="url(#wg)"/>
-  <!-- Black pieces -->
-  <circle cx="282" cy="230" r="44" fill="url(#bg)"/>
-  <circle cx="230" cy="282" r="44" fill="url(#bg)"/>
-  <!-- Gradients for 3D effect -->
   <defs>
-    <radialGradient id="wg" cx="35%" cy="30%" r="65%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#b0bec5"/>
+    <!-- Background: deep abyss -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#031222"/>
+      <stop offset="100%" stop-color="#010810"/>
+    </linearGradient>
+    <!-- Board surface -->
+    <linearGradient id="board" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080f20"/>
+      <stop offset="100%" stop-color="#050c1a"/>
+    </linearGradient>
+    <!-- Pearl (bioluminescent white piece) -->
+    <radialGradient id="pearl" cx="35%" cy="28%" r="65%">
+      <stop offset="0%"   stop-color="#f0ffff"/>
+      <stop offset="55%"  stop-color="#80e0f8"/>
+      <stop offset="100%" stop-color="#3ab8e0"/>
     </radialGradient>
-    <radialGradient id="bg" cx="35%" cy="30%" r="65%">
-      <stop offset="0%" stop-color="#555555"/>
-      <stop offset="100%" stop-color="#0a0a0a"/>
+    <!-- Obsidian (dark piece) -->
+    <radialGradient id="obsidian" cx="35%" cy="28%" r="65%">
+      <stop offset="0%"   stop-color="#1a3050"/>
+      <stop offset="100%" stop-color="#000810"/>
+    </radialGradient>
+    <!-- Vignette -->
+    <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+      <stop offset="45%" stop-color="transparent"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.55)"/>
+    </radialGradient>
+    <!-- Caustics (light from above) -->
+    <radialGradient id="caustics" cx="35%" cy="0%" r="80%">
+      <stop offset="0%"   stop-color="rgba(0,120,220,0.12)"/>
+      <stop offset="100%" stop-color="transparent"/>
     </radialGradient>
   </defs>
+
+  <!-- App background -->
+  <rect width="512" height="512" rx="88" fill="url(#bg)"/>
+
+  <!-- Caustics light filtering from above -->
+  <rect width="512" height="512" rx="88" fill="url(#caustics)"/>
+
+  <!-- Board -->
+  <rect x="50" y="50" width="412" height="412" rx="14" fill="url(#board)"/>
+  <!-- Board border glow -->
+  <rect x="50" y="50" width="412" height="412" rx="14"
+        fill="none" stroke="rgba(0,160,230,0.28)" stroke-width="2"/>
+
+  <!-- Grid lines -->
+  <g stroke="rgba(0,150,220,0.13)" stroke-width="1.5">
+    <line x1="101" y1="50"  x2="101" y2="462"/>
+    <line x1="152" y1="50"  x2="152" y2="462"/>
+    <line x1="204" y1="50"  x2="204" y2="462"/>
+    <line x1="256" y1="50"  x2="256" y2="462"/>
+    <line x1="307" y1="50"  x2="307" y2="462"/>
+    <line x1="358" y1="50"  x2="358" y2="462"/>
+    <line x1="410" y1="50"  x2="410" y2="462"/>
+    <line x1="50"  y1="101" x2="462" y2="101"/>
+    <line x1="50"  y1="152" x2="462" y2="152"/>
+    <line x1="50"  y1="204" x2="462" y2="204"/>
+    <line x1="50"  y1="256" x2="462" y2="256"/>
+    <line x1="50"  y1="307" x2="462" y2="307"/>
+    <line x1="50"  y1="358" x2="462" y2="358"/>
+    <line x1="50"  y1="410" x2="462" y2="410"/>
+  </g>
+
+  <!-- Star points -->
+  <g fill="rgba(0,170,240,0.32)">
+    <circle cx="152" cy="152" r="5"/>
+    <circle cx="358" cy="152" r="5"/>
+    <circle cx="256" cy="256" r="4"/>
+    <circle cx="152" cy="358" r="5"/>
+    <circle cx="358" cy="358" r="5"/>
+  </g>
+
+  <!-- Bioluminescent glow halos (behind white pieces, layered circles) -->
+  <circle cx="231" cy="231" r="80" fill="rgba(0,200,255,0.04)"/>
+  <circle cx="231" cy="231" r="66" fill="rgba(0,210,255,0.07)"/>
+  <circle cx="231" cy="231" r="55" fill="rgba(0,220,255,0.11)"/>
+
+  <circle cx="281" cy="281" r="80" fill="rgba(0,200,255,0.04)"/>
+  <circle cx="281" cy="281" r="66" fill="rgba(0,210,255,0.07)"/>
+  <circle cx="281" cy="281" r="55" fill="rgba(0,220,255,0.11)"/>
+
+  <!-- Obsidian pieces (black) -->
+  <circle cx="281" cy="231" r="43" fill="url(#obsidian)"/>
+  <circle cx="231" cy="281" r="43" fill="url(#obsidian)"/>
+  <!-- Obsidian inner blue highlight -->
+  <circle cx="272" cy="222" r="12" fill="rgba(40,100,200,0.22)"/>
+  <circle cx="222" cy="272" r="12" fill="rgba(40,100,200,0.22)"/>
+
+  <!-- Pearl pieces (white / bioluminescent) -->
+  <circle cx="231" cy="231" r="43" fill="url(#pearl)"/>
+  <circle cx="281" cy="281" r="43" fill="url(#pearl)"/>
+  <!-- Pearl specular highlight -->
+  <circle cx="220" cy="220" r="13" fill="rgba(255,255,255,0.60)"/>
+  <circle cx="270" cy="270" r="13" fill="rgba(255,255,255,0.60)"/>
+  <!-- Pearl edge glow rim -->
+  <circle cx="231" cy="231" r="43" fill="none"
+          stroke="rgba(100,230,255,0.55)" stroke-width="2.5"/>
+  <circle cx="281" cy="281" r="43" fill="none"
+          stroke="rgba(100,230,255,0.55)" stroke-width="2.5"/>
+
+  <!-- Vignette overlay -->
+  <rect width="512" height="512" rx="88" fill="url(#vignette)"/>
 </svg>
