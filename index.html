@@ -1031,25 +1031,25 @@ footer {
 }
 
 .anglerfish .lure-pulse {
-  transform-origin: 38px 47px;
-  animation: lurePulse 1.4s ease-in-out infinite;
+  transform-origin: 50px 50px;
+  animation: lurePulse 1.8s ease-in-out infinite;
 }
 
 @keyframes anglerSwim {
-  0%   { transform: translateX(40px)                translateY(0); opacity: 0; }
-  6%   { opacity: 0.92; }
-  92%  { opacity: 0.85; }
-  100% { transform: translateX(calc(-100vw - 280px)) translateY(28px); opacity: 0; }
+  0%   { transform: translateX(40px)                  translateY(0); opacity: 0; }
+  6%   { opacity: 0.94; }
+  92%  { opacity: 0.88; }
+  100% { transform: translateX(calc(-100vw - 320px)) translateY(26px); opacity: 0; }
 }
 
 @keyframes anglerBob {
-  0%, 100% { transform: translateY(0)   rotate(-1.5deg); }
-  50%      { transform: translateY(8px) rotate(1.5deg); }
+  0%, 100% { transform: translateY(0)   rotate(-0.8deg); }
+  50%      { transform: translateY(5px) rotate(0.8deg); }
 }
 
 @keyframes lurePulse {
   0%, 100% { opacity: 0.55; transform: scale(0.85); }
-  50%      { opacity: 1;    transform: scale(1.20); }
+  50%      { opacity: 1;    transform: scale(1.18); }
 }
 
 @media (max-width: 480px) {
@@ -1540,7 +1540,7 @@ footer {
 // ============================================================
 //  VERSION
 // ============================================================
-const APP_VERSION = 'v1.13.0';
+const APP_VERSION = 'v1.14.0';
 (function() {
   const el = document.getElementById('version-badge');
   if (el) el.textContent = APP_VERSION;
@@ -2038,48 +2038,114 @@ const APP_VERSION = 'v1.13.0';
     }
   });
 
-  // アンコウ SVG — 発光ルアー・鋭い歯・暗黒の体
+  // アンコウ SVG — グラデーション・複数フィン・不揃いな針状の歯・多層眼球
   const ANGLERFISH_SVG = `
     <div class="body-wrap">
-      <svg width="230" height="150" viewBox="0 0 230 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- 体の影 -->
-        <ellipse cx="135" cy="85" rx="72" ry="44" fill="#040814"/>
-        <!-- 体の青みハイライト -->
-        <ellipse cx="120" cy="72" rx="58" ry="24" fill="#0e1a30" opacity="0.55"/>
-        <!-- 背びれ -->
-        <path d="M130,40 L138,12 L158,38 Z" fill="#08111f"/>
-        <!-- 尾びれ -->
-        <polygon points="195,85 222,55 222,115" fill="#0a1525"/>
-        <polygon points="195,85 212,68 212,102" fill="#1a2540" opacity="0.6"/>
-        <!-- 開いた口（深い闇）-->
-        <path d="M60,86 Q85,102 125,93 L125,105 Q85,113 60,96 Z" fill="#000206"/>
-        <!-- 上の歯 -->
-        <polygon points="66,87 70,99 63,96"      fill="#f0f8ff"/>
-        <polygon points="78,87 82,100 75,98"     fill="#f0f8ff"/>
-        <polygon points="92,87 96,100 88,99"     fill="#f0f8ff"/>
-        <polygon points="106,87 110,100 102,98"  fill="#f0f8ff"/>
-        <polygon points="118,87 121,99 113,98"   fill="#f0f8ff"/>
-        <!-- 下の歯 -->
-        <polygon points="70,108 73,100 76,108"   fill="#f0f8ff"/>
-        <polygon points="84,110 87,101 90,110"   fill="#f0f8ff"/>
-        <polygon points="98,110 101,101 104,110" fill="#f0f8ff"/>
-        <polygon points="112,109 115,101 118,109" fill="#f0f8ff"/>
-        <!-- 目 -->
-        <circle cx="98" cy="68" r="6.2" fill="#fff8d8"/>
-        <circle cx="100" cy="68" r="3.2" fill="#0a0500"/>
-        <circle cx="99.3" cy="67.1" r="1" fill="#ffffff"/>
-        <!-- アンテナ -->
-        <path d="M75,68 Q56,55 38,47" stroke="rgba(10,15,25,0.95)" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <!-- ルアーの光（脈動） -->
+      <svg width="270" height="190" viewBox="0 0 270 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="afBody" cx="40%" cy="32%" r="78%">
+            <stop offset="0%"  stop-color="#1c2d4a"/>
+            <stop offset="45%" stop-color="#0a1626"/>
+            <stop offset="100%" stop-color="#020610"/>
+          </radialGradient>
+          <radialGradient id="afLure" cx="48%" cy="42%" r="60%">
+            <stop offset="0%"  stop-color="#ffffff"/>
+            <stop offset="22%" stop-color="#fff6c0"/>
+            <stop offset="62%" stop-color="#ffcc55"/>
+            <stop offset="100%" stop-color="#e07020"/>
+          </radialGradient>
+          <linearGradient id="afTooth" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#fafdff"/>
+            <stop offset="55%" stop-color="#d8e4f0"/>
+            <stop offset="100%" stop-color="#90a8c0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- 尾びれ（本体の後ろ）-->
+        <path d="M205,100 Q243,68 262,62 L262,142 Q243,138 205,114 Z" fill="#06101c"/>
+        <path d="M212,96  L258,70"  stroke="#1b2c44" stroke-width="0.7" opacity="0.65"/>
+        <path d="M214,104 L260,104" stroke="#1b2c44" stroke-width="0.7" opacity="0.65"/>
+        <path d="M212,112 L258,134" stroke="#1b2c44" stroke-width="0.7" opacity="0.65"/>
+
+        <!-- 体（球状に近い有機的なシルエット）-->
+        <path d="M82,108
+                 Q76,60 130,52
+                 Q176,46 212,68
+                 Q234,90 224,122
+                 Q210,154 165,158
+                 Q110,158 86,132
+                 Q76,120 82,108 Z" fill="url(#afBody)"/>
+
+        <!-- 背びれ（2枚連結で奥行き） -->
+        <path d="M140,52 L150,18 L170,50 Z" fill="#040a16"/>
+        <path d="M170,50 L184,22 L198,55 Z" fill="#040a16" opacity="0.85"/>
+        <path d="M155,38 L160,28 L168,40 Z" fill="#08111f" opacity="0.7"/>
+
+        <!-- 胸びれ -->
+        <path d="M155,148 Q172,168 175,184 Q148,176 140,154 Z" fill="#06101c"/>
+
+        <!-- 大きく開けた口 -->
+        <path d="M68,112 Q92,140 145,128 Q143,144 124,152 Q88,156 68,134 Z" fill="#000206"/>
+        <!-- 口腔内のさらに深い闇 -->
+        <ellipse cx="103" cy="138" rx="32" ry="8" fill="#000000" opacity="0.75"/>
+
+        <!-- 上の歯（不揃い・奥ほど長い）-->
+        <path d="M74,112 L78,138 L71,122 Z"   fill="url(#afTooth)"/>
+        <path d="M85,114 L91,148 L82,132 Z"   fill="url(#afTooth)"/>
+        <path d="M97,116 L102,146 L94,133 Z"  fill="url(#afTooth)"/>
+        <path d="M110,117 L114,148 L106,135 Z" fill="url(#afTooth)"/>
+        <path d="M123,118 L126,142 L119,133 Z" fill="url(#afTooth)"/>
+        <path d="M135,118 L137,136 L131,131 Z" fill="url(#afTooth)"/>
+
+        <!-- 下の歯（短め・本数控えめ）-->
+        <path d="M80,146 L84,134 L88,146 Z"   fill="url(#afTooth)"/>
+        <path d="M93,150 L98,138 L102,150 Z"  fill="url(#afTooth)"/>
+        <path d="M106,152 L111,140 L115,152 Z" fill="url(#afTooth)"/>
+        <path d="M120,151 L125,140 L129,151 Z" fill="url(#afTooth)"/>
+        <path d="M132,148 L136,140 L139,148 Z" fill="url(#afTooth)"/>
+
+        <!-- 眉ライン -->
+        <path d="M106,82 Q120,76 138,84" stroke="#020610" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0.75"/>
+
+        <!-- 眼球（眼窩・白目・虹彩・瞳孔・ハイライト） -->
+        <ellipse cx="122" cy="93" rx="10.5" ry="9.2" fill="#040a14"/>
+        <circle  cx="122" cy="93" r="7"   fill="#fff4d2"/>
+        <circle  cx="124" cy="93" r="5"   fill="#1d3520"/>
+        <circle  cx="124" cy="93" r="3.4" fill="#0a1810"/>
+        <ellipse cx="124.6" cy="93" rx="1.7" ry="3.2" fill="#000"/>
+        <circle  cx="122.5" cy="90.5" r="1.4" fill="#ffffff"/>
+        <circle  cx="126.2" cy="95.5" r="0.6" fill="#ffffff" opacity="0.75"/>
+
+        <!-- アンテナ（外側影＋内側ハイライト） -->
+        <path d="M110,68 Q88,56 68,52 Q56,48 50,50"
+              stroke="#020610" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+        <path d="M110,68 Q88,56 68,52 Q56,48 50,50"
+              stroke="#1c2944" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="112" cy="70" rx="4.5" ry="3.5" fill="#040a14"/>
+
+        <!-- ルアーの光（脈動）-->
         <g class="lure-pulse">
-          <circle cx="38" cy="47" r="34" fill="rgba(255,235,140,0.18)"/>
-          <circle cx="38" cy="47" r="22" fill="rgba(255,225,110,0.35)"/>
-          <circle cx="38" cy="47" r="12" fill="rgba(255,230,130,0.55)"/>
+          <circle cx="50" cy="50" r="44" fill="rgba(255,225,140,0.07)"/>
+          <circle cx="50" cy="50" r="32" fill="rgba(255,215,110,0.14)"/>
+          <circle cx="50" cy="50" r="22" fill="rgba(255,220,125,0.28)"/>
+          <circle cx="50" cy="50" r="14" fill="rgba(255,230,140,0.48)"/>
         </g>
-        <!-- ルアー本体 -->
-        <circle cx="38" cy="47" r="6.5" fill="#ffe680"/>
-        <circle cx="38" cy="47" r="4"   fill="#fff4a0"/>
-        <circle cx="37" cy="46" r="1.4" fill="#ffffff"/>
+
+        <!-- ルアー本体（涙滴型）-->
+        <ellipse cx="50" cy="50" rx="8.5" ry="9.5" fill="url(#afLure)"/>
+        <ellipse cx="50" cy="50" rx="5.5" ry="6.5" fill="#fff8c8"/>
+        <ellipse cx="48" cy="47" rx="2.4" ry="2.9" fill="#fffae8"/>
+        <circle  cx="47.5" cy="45.8" r="1.1" fill="#ffffff"/>
+
+        <!-- 体表の生物発光スポット -->
+        <circle cx="178" cy="78"  r="1.5" fill="rgba(130,225,255,0.75)"/>
+        <circle cx="195" cy="92"  r="1.1" fill="rgba(130,225,255,0.6)"/>
+        <circle cx="210" cy="108" r="1.3" fill="rgba(130,225,255,0.65)"/>
+        <circle cx="168" cy="128" r="1.0" fill="rgba(150,235,255,0.6)"/>
+        <circle cx="190" cy="138" r="0.9" fill="rgba(150,235,255,0.65)"/>
+        <circle cx="152" cy="90"  r="0.8" fill="rgba(150,235,255,0.55)"/>
+        <circle cx="200" cy="125" r="0.8" fill="rgba(130,225,255,0.55)"/>
+        <circle cx="162" cy="105" r="0.7" fill="rgba(150,235,255,0.5)"/>
       </svg>
     </div>
   `;
