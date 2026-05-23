@@ -1540,7 +1540,7 @@ footer {
 // ============================================================
 //  VERSION
 // ============================================================
-const APP_VERSION = 'v1.14.0';
+const APP_VERSION = 'v1.14.1';
 (function() {
   const el = document.getElementById('version-badge');
   if (el) el.textContent = APP_VERSION;
@@ -2055,9 +2055,9 @@ const APP_VERSION = 'v1.14.0';
             <stop offset="100%" stop-color="#e07020"/>
           </radialGradient>
           <linearGradient id="afTooth" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stop-color="#fafdff"/>
-            <stop offset="55%" stop-color="#d8e4f0"/>
-            <stop offset="100%" stop-color="#90a8c0"/>
+            <stop offset="0%"  stop-color="#e8eef5"/>
+            <stop offset="60%" stop-color="#b8c4d4"/>
+            <stop offset="100%" stop-color="#7088a0"/>
           </linearGradient>
         </defs>
 
@@ -2089,20 +2089,18 @@ const APP_VERSION = 'v1.14.0';
         <!-- 口腔内のさらに深い闇 -->
         <ellipse cx="103" cy="138" rx="32" ry="8" fill="#000000" opacity="0.75"/>
 
-        <!-- 上の歯（不揃い・奥ほど長い）-->
-        <path d="M74,112 L78,138 L71,122 Z"   fill="url(#afTooth)"/>
-        <path d="M85,114 L91,148 L82,132 Z"   fill="url(#afTooth)"/>
-        <path d="M97,116 L102,146 L94,133 Z"  fill="url(#afTooth)"/>
-        <path d="M110,117 L114,148 L106,135 Z" fill="url(#afTooth)"/>
-        <path d="M123,118 L126,142 L119,133 Z" fill="url(#afTooth)"/>
-        <path d="M135,118 L137,136 L131,131 Z" fill="url(#afTooth)"/>
+        <!-- 上の歯（短め・控えめな本数）-->
+        <path d="M82,116 L86,128 L78,124 Z"    fill="url(#afTooth)"/>
+        <path d="M96,118 L100,131 L92,127 Z"   fill="url(#afTooth)"/>
+        <path d="M110,119 L114,132 L106,128 Z" fill="url(#afTooth)"/>
+        <path d="M124,120 L127,130 L119,127 Z" fill="url(#afTooth)"/>
+        <path d="M136,120 L138,128 L132,126 Z" fill="url(#afTooth)"/>
 
-        <!-- 下の歯（短め・本数控えめ）-->
-        <path d="M80,146 L84,134 L88,146 Z"   fill="url(#afTooth)"/>
-        <path d="M93,150 L98,138 L102,150 Z"  fill="url(#afTooth)"/>
-        <path d="M106,152 L111,140 L115,152 Z" fill="url(#afTooth)"/>
-        <path d="M120,151 L125,140 L129,151 Z" fill="url(#afTooth)"/>
-        <path d="M132,148 L136,140 L139,148 Z" fill="url(#afTooth)"/>
+        <!-- 下の歯（より短く・小ぶり）-->
+        <path d="M88,146 L91,138 L94,146 Z"    fill="url(#afTooth)"/>
+        <path d="M102,148 L106,140 L110,148 Z" fill="url(#afTooth)"/>
+        <path d="M116,149 L120,141 L124,149 Z" fill="url(#afTooth)"/>
+        <path d="M130,147 L133,141 L136,147 Z" fill="url(#afTooth)"/>
 
         <!-- 眉ライン -->
         <path d="M106,82 Q120,76 138,84" stroke="#020610" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0.75"/>
