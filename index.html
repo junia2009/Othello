@@ -1730,7 +1730,7 @@ footer {
 // ============================================================
 //  VERSION
 // ============================================================
-const APP_VERSION = 'v1.15.1';
+const APP_VERSION = 'v1.16.0';
 (function() {
   const el = document.getElementById('version-badge');
   if (el) el.textContent = APP_VERSION;
@@ -2348,10 +2348,13 @@ const APP_VERSION = 'v1.15.1';
 
 // ============================================================
 //  SERVICE WORKER — 自動アップデート
-//  ・load 時: waiting SW があれば即適用、なければ update() で強制チェック
-//  ・updatefound: 新 SW が ready になったらメニュー画面なら即適用
-//  ・visibilitychange (iOS BFCache 対策): フォアグラウンド復帰時に
-//    waiting があれば適用、なければ update() で強制チェック
+//  ・ページ本体は sw.js 側で Network-First → オンラインなら再読み込み1回で
+//    即最新（SWの世代交代を待たずに中身が更新される）。
+//  ・以下はSW自身（fetchロジック等）の更新を安全に適用するための補助：
+//    - register は updateViaCache:'none' で sw.js のHTTPキャッシュを無効化
+//    - load 時: waiting SW があれば即適用、なければ update() で強制チェック
+//    - updatefound: 新 SW が installed になったらメニュー画面なら即適用
+//    - visibilitychange (iOS BFCache 対策): フォアグラウンド復帰時に再チェック
 // ============================================================
 if ('serviceWorker' in navigator) {
   let reloading = false;
@@ -2384,7 +2387,7 @@ if ('serviceWorker' in navigator) {
   }
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(reg => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
       if (reg.waiting) {
         // ロード直後に waiting SW あり → 即適用（ゲーム未開始なので安全）
         applyWaiting(reg);

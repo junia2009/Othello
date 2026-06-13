@@ -1,4 +1,4 @@
-const VERSION = 'v1.15.1';
+const VERSION = 'v1.16.0';
 const CACHE = `othello-${VERSION}`;
 const ASSETS = [
   './',
@@ -10,8 +10,9 @@ const ASSETS = [
 ];
 
 // ── install ───────────────────────────────────────────────────────────────────
-// キャッシュを全部書き終えてから待機状態に入る。
-// skipWaiting は呼ばない → ページが SKIP_WAITING を送るまで waiting のまま。
+// 新バージョンのアセットを一括キャッシュ。
+// skipWaiting は呼ばない → ページが SKIP_WAITING を送るまで waiting のまま
+// （ゲーム中の不意なリロードを避けるため）。
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE)
@@ -28,7 +29,7 @@ self.addEventListener('message', event => {
 });
 
 // ── activate ──────────────────────────────────────────────────────────────────
-// 1. 旧キャッシュ削除
+// 1. 旧バージョンのキャッシュを削除
 // 2. 既存タブの制御を奪取
 self.addEventListener('activate', event => {
   event.waitUntil(
@@ -41,21 +42,44 @@ self.addEventListener('activate', event => {
 });
 
 // ── fetch ─────────────────────────────────────────────────────────────────────
-// Cache-First: キャッシュヒット → 返す。ミス → ネット取得してキャッシュに追加。
+// ページ本体(navigate)   = Network-First
+//   → オンラインなら常に最新の HTML を返す（再読み込み1回で即最新）。
+//     ネットワーク失敗時のみキャッシュにフォールバック（オフライン動作を維持）。
+// その他アセット(icon等) = Cache-First（高速・オフライン対応）。
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
+  // ページ遷移リクエスト → Network-First
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req)
+        .then(response => {
+          // 取得できたら最新をキャッシュへ反映（オフライン用）
+          const copy = response.clone();
+          caches.open(CACHE).then(cache => cache.put(req, copy)).catch(() => {});
+          return response;
+        })
+        .catch(() =>
+          // オフライン等 → キャッシュ済みページを返す
+          caches.match(req).then(cached => cached || caches.match('./index.html'))
+        )
+    );
+    return;
+  }
+
+  // 静的アセット → Cache-First
   event.respondWith(
-    caches.match(event.request).then(cached => {
+    caches.match(req).then(cached => {
       if (cached) return cached;
-      return fetch(event.request).then(response => {
+      return fetch(req).then(response => {
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
-        const toCache = response.clone();
-        caches.open(CACHE).then(cache => cache.put(event.request, toCache));
+        const copy = response.clone();
+        caches.open(CACHE).then(cache => cache.put(req, copy)).catch(() => {});
         return response;
       });
     })
