@@ -1,4 +1,4 @@
-const VERSION = 'v1.15.0';
+const VERSION = 'v1.15.1';
 const CACHE = `othello-${VERSION}`;
 const ASSETS = [
   './',

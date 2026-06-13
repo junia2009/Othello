@@ -332,69 +332,69 @@ h1 {
 
 .diff-btn { padding: 10px 8px; font-size: 0.88rem; }
 
-/* 鬼レベル（隠しイースターエッグ） — 解放されるまで非表示 */
-.diff-btn.oni-btn { display: none; grid-column: 1 / -1; }
-.diff-btn.oni-btn.unlocked {
+/* 主（ぬし）レベル（隠しイースターエッグ） — 解放されるまで非表示 */
+.diff-btn.nushi-btn { display: none; grid-column: 1 / -1; }
+.diff-btn.nushi-btn.unlocked {
   display: block;
-  border-color: rgba(255,70,60,0.55);
-  color: #ffd8cf;
-  background: linear-gradient(135deg, rgba(120,10,10,0.6), rgba(60,0,10,0.75));
-  text-shadow: 0 0 10px rgba(255,90,60,0.6);
-  box-shadow: 0 0 14px rgba(255,50,40,0.25), inset 0 0 10px rgba(255,60,40,0.12);
+  border-color: rgba(180,90,255,0.55);
+  color: #ecd6ff;
+  background: linear-gradient(135deg, rgba(80,20,130,0.6), rgba(40,0,70,0.78));
+  text-shadow: 0 0 10px rgba(190,110,255,0.65);
+  box-shadow: 0 0 14px rgba(170,80,255,0.3), inset 0 0 10px rgba(160,90,255,0.14);
   letter-spacing: 0.12em;
-  animation: oniBtnPulse 2.4s ease-in-out infinite;
+  animation: nushiBtnPulse 2.6s ease-in-out infinite;
 }
-.diff-btn.oni-btn.unlocked:hover {
-  background: linear-gradient(135deg, rgba(160,20,20,0.7), rgba(90,0,15,0.85));
-  border-color: rgba(255,110,90,0.8);
-  box-shadow: 0 0 22px rgba(255,70,50,0.5), inset 0 0 12px rgba(255,80,50,0.18);
+.diff-btn.nushi-btn.unlocked:hover {
+  background: linear-gradient(135deg, rgba(110,30,170,0.72), rgba(60,0,100,0.85));
+  border-color: rgba(200,130,255,0.8);
+  box-shadow: 0 0 22px rgba(185,110,255,0.5), inset 0 0 12px rgba(180,110,255,0.2);
 }
-.diff-btn.oni-btn.unlocked.active {
-  background: linear-gradient(135deg, rgba(200,30,25,0.8), rgba(110,0,15,0.9));
-  border-color: rgba(255,140,110,0.9);
-  color: #fff0ec;
-  box-shadow: 0 0 26px rgba(255,80,55,0.6), inset 0 0 14px rgba(255,90,60,0.25);
+.diff-btn.nushi-btn.unlocked.active {
+  background: linear-gradient(135deg, rgba(150,50,210,0.82), rgba(80,0,130,0.9));
+  border-color: rgba(215,160,255,0.9);
+  color: #f6ecff;
+  box-shadow: 0 0 26px rgba(195,120,255,0.6), inset 0 0 14px rgba(190,120,255,0.28);
 }
-@keyframes oniBtnPulse {
-  0%, 100% { box-shadow: 0 0 14px rgba(255,50,40,0.25), inset 0 0 10px rgba(255,60,40,0.12); }
-  50%      { box-shadow: 0 0 22px rgba(255,70,55,0.5),  inset 0 0 14px rgba(255,80,55,0.22); }
+@keyframes nushiBtnPulse {
+  0%, 100% { box-shadow: 0 0 14px rgba(170,80,255,0.3), inset 0 0 10px rgba(160,90,255,0.14); }
+  50%      { box-shadow: 0 0 24px rgba(190,110,255,0.55), inset 0 0 14px rgba(185,115,255,0.24); }
 }
 
-/* 鬼 解放演出（全画面フラッシュ） */
-.oni-reveal {
+/* 主 解放演出（全画面フラッシュ） */
+.nushi-reveal {
   position: fixed; inset: 0;
   display: flex; align-items: center; justify-content: center;
   z-index: 9999;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 45%, rgba(120,0,0,0.5), rgba(0,0,0,0.82) 70%);
-  animation: oniReveal 3.4s ease-in-out forwards;
+  background: radial-gradient(circle at 50% 45%, rgba(70,10,120,0.55), rgba(0,0,0,0.85) 70%);
+  animation: nushiReveal 3.4s ease-in-out forwards;
 }
-.oni-reveal-inner { text-align: center; }
-.oni-kanji {
+.nushi-reveal-inner { text-align: center; }
+.nushi-kanji {
   font-size: clamp(7rem, 38vw, 16rem);
   font-weight: 900;
-  color: #ff5a3c;
+  color: #c389ff;
   line-height: 1;
-  text-shadow: 0 0 28px rgba(255,60,30,0.9), 0 0 60px rgba(255,30,10,0.7);
-  animation: oniKanjiShake 0.42s ease-in-out 3;
+  text-shadow: 0 0 28px rgba(170,90,255,0.9), 0 0 60px rgba(120,40,230,0.7);
+  animation: nushiKanjiRise 0.9s ease-out;
 }
-.oni-sub {
+.nushi-sub {
   margin-top: 18px;
   font-size: clamp(1rem, 5vw, 1.5rem);
   letter-spacing: 0.5em;
-  color: #ffd0c4;
-  text-shadow: 0 0 14px rgba(255,80,50,0.8);
+  color: #e4ccff;
+  text-shadow: 0 0 14px rgba(180,110,255,0.8);
 }
-@keyframes oniReveal {
+@keyframes nushiReveal {
   0%   { opacity: 0; }
   12%  { opacity: 1; }
   82%  { opacity: 1; }
   100% { opacity: 0; }
 }
-@keyframes oniKanjiShake {
-  0%,100% { transform: translateX(0) scale(1); }
-  25% { transform: translateX(-6px) scale(1.02); }
-  75% { transform: translateX(6px)  scale(1.02); }
+@keyframes nushiKanjiRise {
+  0%   { transform: translateY(24px) scale(0.86); filter: blur(6px); }
+  60%  { transform: translateY(0) scale(1.03); filter: blur(0); }
+  100% { transform: translateY(0) scale(1); }
 }
 
 /* 2人対戦時は石の色選択を隠す */
@@ -1162,7 +1162,7 @@ footer {
         <button class="btn diff-btn" data-diff="easy">弱 Easy</button>
         <button class="btn diff-btn active" data-diff="normal">中 Normal</button>
         <button class="btn diff-btn" data-diff="hard">強 Hard</button>
-        <button class="btn diff-btn oni-btn" data-diff="oni">鬼 ONI</button>
+        <button class="btn diff-btn nushi-btn" data-diff="nushi">主 NUSHI</button>
       </div>
     </div>
     <div class="difficulty-row" id="color-section" style="margin-top:12px;">
@@ -1478,13 +1478,13 @@ footer {
     return move||moves[0];
   }
 
-  // ---------- 鬼 (boss) AI: 深い探索 + 着手順序付け + 終盤読み切り ----------
-  const ONI_DEPTH = 6;          // 中盤の探索深度
-  const ONI_SOLVE_EMPTIES = 10; // 空きがこれ以下なら最後まで読み切る
+  // ---------- 主 (boss) AI: 深い探索 + 着手順序付け + 終盤読み切り ----------
+  const NUSHI_DEPTH = 6;          // 中盤の探索深度
+  const NUSHI_SOLVE_EMPTIES = 10; // 空きがこれ以下なら最後まで読み切る
 
   const CORNERS = [[0,0],[0,7],[7,0],[7,7]];
 
-  function evaluateOni(board, player) {
+  function evaluateNushi(board, player) {
     const opp = opponent(player);
     let score = 0, myC = 0, oppC = 0, myFront = 0, oppFront = 0;
     for (let r=0;r<SIZE;r++)
@@ -1516,7 +1516,7 @@ footer {
     return score;
   }
 
-  function minimaxOni(board,depth,alpha,beta,maximizing,ai) {
+  function minimaxNushi(board,depth,alpha,beta,maximizing,ai) {
     const cur = maximizing ? ai : opponent(ai);
     const moves = getValidMoves(board,cur);
     if (!moves.length) {
@@ -1524,9 +1524,9 @@ footer {
         const {black,white}=countPieces(board);
         return { score:(ai===BLACK?black-white:white-black)*100000, move:null };
       }
-      return minimaxOni(board,depth-1,alpha,beta,!maximizing,ai); // パス
+      return minimaxNushi(board,depth-1,alpha,beta,!maximizing,ai); // パス
     }
-    if (depth===0) return { score:evaluateOni(board,ai), move:null };
+    if (depth===0) return { score:evaluateNushi(board,ai), move:null };
     // 着手順序付け: 盤面重みの高い手から探索して枝刈り効率を上げる
     moves.sort((a,b)=>WEIGHTS[b.r][b.c]-WEIGHTS[a.r][a.c]);
     let best=null;
@@ -1534,7 +1534,7 @@ footer {
       let max=-Infinity;
       for (const m of moves) {
         const nb=cloneBoard(board); applyMove(nb,m.r,m.c,cur,m.flips);
-        const {score}=minimaxOni(nb,depth-1,alpha,beta,false,ai);
+        const {score}=minimaxNushi(nb,depth-1,alpha,beta,false,ai);
         if (score>max) { max=score; best=m; }
         alpha=Math.max(alpha,score); if (beta<=alpha) break;
       }
@@ -1543,7 +1543,7 @@ footer {
       let min=Infinity;
       for (const m of moves) {
         const nb=cloneBoard(board); applyMove(nb,m.r,m.c,cur,m.flips);
-        const {score}=minimaxOni(nb,depth-1,alpha,beta,true,ai);
+        const {score}=minimaxNushi(nb,depth-1,alpha,beta,true,ai);
         if (score<min) { min=score; best=m; }
         beta=Math.min(beta,score); if (beta<=alpha) break;
       }
@@ -1551,13 +1551,13 @@ footer {
     }
   }
 
-  function aiPickOni(board,player) {
+  function aiPickNushi(board,player) {
     const moves=getValidMoves(board,player);
     if (!moves.length) return null;
     let empties=0;
     for (let r=0;r<SIZE;r++) for (let c=0;c<SIZE;c++) if (board[r][c]===EMPTY) empties++;
-    const depth = empties<=ONI_SOLVE_EMPTIES ? empties : ONI_DEPTH; // 終盤は読み切り
-    const {move}=minimaxOni(board,depth,-Infinity,Infinity,true,player);
+    const depth = empties<=NUSHI_SOLVE_EMPTIES ? empties : NUSHI_DEPTH; // 終盤は読み切り
+    const {move}=minimaxNushi(board,depth,-Infinity,Infinity,true,player);
     return move||moves[0];
   }
 
@@ -1565,7 +1565,7 @@ footer {
     switch(state.cpuDifficulty) {
       case 'easy': return aiPickEasy(board,player);
       case 'hard': return aiPickHard(board,player);
-      case 'oni':  return aiPickOni(board,player);
+      case 'nushi':  return aiPickNushi(board,player);
       default:     return aiPickNormal(board,player);
     }
   }
@@ -1618,43 +1618,43 @@ footer {
     }, 600);
   }
 
-  // ---------- 鬼レベル 解放（隠しイースターエッグ） ----------
-  const ONI_WINS_NEEDED = 5;
+  // ---------- 主レベル 解放（隠しイースターエッグ） ----------
+  const NUSHI_WINS_NEEDED = 5;
   const LS_HARD_WINS = 'othello_hardWins';
-  const LS_ONI_UNLOCKED = 'othello_oniUnlocked';
+  const LS_NUSHI_UNLOCKED = 'othello_nushiUnlocked';
 
-  const isOniUnlocked = () => { try { return localStorage.getItem(LS_ONI_UNLOCKED)==='1'; } catch { return false; } };
+  const isNushiUnlocked = () => { try { return localStorage.getItem(LS_NUSHI_UNLOCKED)==='1'; } catch { return false; } };
   const getHardWins   = () => { try { return parseInt(localStorage.getItem(LS_HARD_WINS)||'0',10)||0; } catch { return 0; } };
 
-  function revealOniButton() {
-    document.querySelector('.oni-btn')?.classList.add('unlocked');
+  function revealNushiButton() {
+    document.querySelector('.nushi-btn')?.classList.add('unlocked');
   }
 
-  function showOniReveal() {
-    if (document.querySelector('.oni-reveal')) return;
+  function showNushiReveal() {
+    if (document.querySelector('.nushi-reveal')) return;
     const el=document.createElement('div');
-    el.className='oni-reveal';
-    el.innerHTML='<div class="oni-reveal-inner"><div class="oni-kanji">鬼</div><div class="oni-sub">強敵、出現</div></div>';
+    el.className='nushi-reveal';
+    el.innerHTML='<div class="nushi-reveal-inner"><div class="nushi-kanji">主</div><div class="nushi-sub">深海の主、覚醒</div></div>';
     document.body.appendChild(el);
     el.addEventListener('animationend',()=>el.remove(),{once:true});
     setTimeout(()=>el.remove(),3800);
   }
 
   function registerHardWin() {
-    if (isOniUnlocked()) return;
+    if (isNushiUnlocked()) return;
     let wins=getHardWins()+1;
     try { localStorage.setItem(LS_HARD_WINS,String(wins)); } catch {}
-    if (wins>=ONI_WINS_NEEDED) {
-      try { localStorage.setItem(LS_ONI_UNLOCKED,'1'); } catch {}
-      revealOniButton();
-      showOniReveal();
+    if (wins>=NUSHI_WINS_NEEDED) {
+      try { localStorage.setItem(LS_NUSHI_UNLOCKED,'1'); } catch {}
+      revealNushiButton();
+      showNushiReveal();
     }
   }
 
   function endGame() {
     state.gameOver=true; renderBoard();
     const {black,white}=countPieces(state.board);
-    // 「強」CPU に人間が勝ったら鬼レベル解放カウント
+    // 「強」CPU に人間が勝ったら主レベル解放カウント
     if (state.mode==='cpu' && state.cpuDifficulty==='hard') {
       const humanColor=opponent(state.cpuColor);
       const humanWon=(humanColor===BLACK && black>white)||(humanColor===WHITE && white>black);
@@ -1718,7 +1718,7 @@ footer {
     $('btn-menu').addEventListener('click',  backToMenu);
     $('btn-rematch').addEventListener('click',   resetGame);
     $('btn-back-menu').addEventListener('click', backToMenu);
-    if (isOniUnlocked()) revealOniButton(); // 解放済みユーザーには鬼ボタンを表示
+    if (isNushiUnlocked()) revealNushiButton(); // 解放済みユーザーには主ボタンを表示
     state.board=createBoard(); renderBoard();
   }
 
@@ -1730,7 +1730,7 @@ footer {
 // ============================================================
 //  VERSION
 // ============================================================
-const APP_VERSION = 'v1.15.0';
+const APP_VERSION = 'v1.15.1';
 (function() {
   const el = document.getElementById('version-badge');
   if (el) el.textContent = APP_VERSION;
