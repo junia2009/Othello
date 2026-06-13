@@ -332,6 +332,71 @@ h1 {
 
 .diff-btn { padding: 10px 8px; font-size: 0.88rem; }
 
+/* 鬼レベル（隠しイースターエッグ） — 解放されるまで非表示 */
+.diff-btn.oni-btn { display: none; grid-column: 1 / -1; }
+.diff-btn.oni-btn.unlocked {
+  display: block;
+  border-color: rgba(255,70,60,0.55);
+  color: #ffd8cf;
+  background: linear-gradient(135deg, rgba(120,10,10,0.6), rgba(60,0,10,0.75));
+  text-shadow: 0 0 10px rgba(255,90,60,0.6);
+  box-shadow: 0 0 14px rgba(255,50,40,0.25), inset 0 0 10px rgba(255,60,40,0.12);
+  letter-spacing: 0.12em;
+  animation: oniBtnPulse 2.4s ease-in-out infinite;
+}
+.diff-btn.oni-btn.unlocked:hover {
+  background: linear-gradient(135deg, rgba(160,20,20,0.7), rgba(90,0,15,0.85));
+  border-color: rgba(255,110,90,0.8);
+  box-shadow: 0 0 22px rgba(255,70,50,0.5), inset 0 0 12px rgba(255,80,50,0.18);
+}
+.diff-btn.oni-btn.unlocked.active {
+  background: linear-gradient(135deg, rgba(200,30,25,0.8), rgba(110,0,15,0.9));
+  border-color: rgba(255,140,110,0.9);
+  color: #fff0ec;
+  box-shadow: 0 0 26px rgba(255,80,55,0.6), inset 0 0 14px rgba(255,90,60,0.25);
+}
+@keyframes oniBtnPulse {
+  0%, 100% { box-shadow: 0 0 14px rgba(255,50,40,0.25), inset 0 0 10px rgba(255,60,40,0.12); }
+  50%      { box-shadow: 0 0 22px rgba(255,70,55,0.5),  inset 0 0 14px rgba(255,80,55,0.22); }
+}
+
+/* 鬼 解放演出（全画面フラッシュ） */
+.oni-reveal {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 45%, rgba(120,0,0,0.5), rgba(0,0,0,0.82) 70%);
+  animation: oniReveal 3.4s ease-in-out forwards;
+}
+.oni-reveal-inner { text-align: center; }
+.oni-kanji {
+  font-size: clamp(7rem, 38vw, 16rem);
+  font-weight: 900;
+  color: #ff5a3c;
+  line-height: 1;
+  text-shadow: 0 0 28px rgba(255,60,30,0.9), 0 0 60px rgba(255,30,10,0.7);
+  animation: oniKanjiShake 0.42s ease-in-out 3;
+}
+.oni-sub {
+  margin-top: 18px;
+  font-size: clamp(1rem, 5vw, 1.5rem);
+  letter-spacing: 0.5em;
+  color: #ffd0c4;
+  text-shadow: 0 0 14px rgba(255,80,50,0.8);
+}
+@keyframes oniReveal {
+  0%   { opacity: 0; }
+  12%  { opacity: 1; }
+  82%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes oniKanjiShake {
+  0%,100% { transform: translateX(0) scale(1); }
+  25% { transform: translateX(-6px) scale(1.02); }
+  75% { transform: translateX(6px)  scale(1.02); }
+}
+
 /* 2人対戦時は石の色選択を隠す */
 #mode-select[data-mode="2p"] #color-section { display: none; }
 
@@ -1097,6 +1162,7 @@ footer {
         <button class="btn diff-btn" data-diff="easy">弱 Easy</button>
         <button class="btn diff-btn active" data-diff="normal">中 Normal</button>
         <button class="btn diff-btn" data-diff="hard">強 Hard</button>
+        <button class="btn diff-btn oni-btn" data-diff="oni">鬼 ONI</button>
       </div>
     </div>
     <div class="difficulty-row" id="color-section" style="margin-top:12px;">
@@ -1412,10 +1478,94 @@ footer {
     return move||moves[0];
   }
 
+  // ---------- 鬼 (boss) AI: 深い探索 + 着手順序付け + 終盤読み切り ----------
+  const ONI_DEPTH = 6;          // 中盤の探索深度
+  const ONI_SOLVE_EMPTIES = 10; // 空きがこれ以下なら最後まで読み切る
+
+  const CORNERS = [[0,0],[0,7],[7,0],[7,7]];
+
+  function evaluateOni(board, player) {
+    const opp = opponent(player);
+    let score = 0, myC = 0, oppC = 0, myFront = 0, oppFront = 0;
+    for (let r=0;r<SIZE;r++)
+      for (let c=0;c<SIZE;c++) {
+        const v = board[r][c];
+        if (v===EMPTY) continue;
+        const mine = v===player;
+        if (mine) { score += WEIGHTS[r][c]; myC++; }
+        else      { score -= WEIGHTS[r][c]; oppC++; }
+        // フロンティア石（空きマスに隣接）は不安定で弱い
+        let frontier = false;
+        for (const [dr,dc] of DIRS) {
+          const nr=r+dr, nc=c+dc;
+          if (inBounds(nr,nc) && board[nr][nc]===EMPTY) { frontier=true; break; }
+        }
+        if (frontier) { if (mine) myFront++; else oppFront++; }
+      }
+    // 着手可能数（機動力）
+    score += (getValidMoves(board,player).length - getValidMoves(board,opp).length) * 10;
+    // フロンティア石は少ないほど良い
+    score -= (myFront - oppFront) * 8;
+    // 角は明示的に大きく評価
+    for (const [r,c] of CORNERS) {
+      if (board[r][c]===player)   score += 35;
+      else if (board[r][c]===opp) score -= 35;
+    }
+    // 終盤は石数差そのものを重視
+    if (myC+oppC >= 56) score += (myC-oppC) * 25;
+    return score;
+  }
+
+  function minimaxOni(board,depth,alpha,beta,maximizing,ai) {
+    const cur = maximizing ? ai : opponent(ai);
+    const moves = getValidMoves(board,cur);
+    if (!moves.length) {
+      if (!getValidMoves(board,opponent(cur)).length) {
+        const {black,white}=countPieces(board);
+        return { score:(ai===BLACK?black-white:white-black)*100000, move:null };
+      }
+      return minimaxOni(board,depth-1,alpha,beta,!maximizing,ai); // パス
+    }
+    if (depth===0) return { score:evaluateOni(board,ai), move:null };
+    // 着手順序付け: 盤面重みの高い手から探索して枝刈り効率を上げる
+    moves.sort((a,b)=>WEIGHTS[b.r][b.c]-WEIGHTS[a.r][a.c]);
+    let best=null;
+    if (maximizing) {
+      let max=-Infinity;
+      for (const m of moves) {
+        const nb=cloneBoard(board); applyMove(nb,m.r,m.c,cur,m.flips);
+        const {score}=minimaxOni(nb,depth-1,alpha,beta,false,ai);
+        if (score>max) { max=score; best=m; }
+        alpha=Math.max(alpha,score); if (beta<=alpha) break;
+      }
+      return {score:max,move:best};
+    } else {
+      let min=Infinity;
+      for (const m of moves) {
+        const nb=cloneBoard(board); applyMove(nb,m.r,m.c,cur,m.flips);
+        const {score}=minimaxOni(nb,depth-1,alpha,beta,true,ai);
+        if (score<min) { min=score; best=m; }
+        beta=Math.min(beta,score); if (beta<=alpha) break;
+      }
+      return {score:min,move:best};
+    }
+  }
+
+  function aiPickOni(board,player) {
+    const moves=getValidMoves(board,player);
+    if (!moves.length) return null;
+    let empties=0;
+    for (let r=0;r<SIZE;r++) for (let c=0;c<SIZE;c++) if (board[r][c]===EMPTY) empties++;
+    const depth = empties<=ONI_SOLVE_EMPTIES ? empties : ONI_DEPTH; // 終盤は読み切り
+    const {move}=minimaxOni(board,depth,-Infinity,Infinity,true,player);
+    return move||moves[0];
+  }
+
   function pickCpuMove(board,player) {
     switch(state.cpuDifficulty) {
       case 'easy': return aiPickEasy(board,player);
       case 'hard': return aiPickHard(board,player);
+      case 'oni':  return aiPickOni(board,player);
       default:     return aiPickNormal(board,player);
     }
   }
@@ -1468,9 +1618,48 @@ footer {
     }, 600);
   }
 
+  // ---------- 鬼レベル 解放（隠しイースターエッグ） ----------
+  const ONI_WINS_NEEDED = 5;
+  const LS_HARD_WINS = 'othello_hardWins';
+  const LS_ONI_UNLOCKED = 'othello_oniUnlocked';
+
+  const isOniUnlocked = () => { try { return localStorage.getItem(LS_ONI_UNLOCKED)==='1'; } catch { return false; } };
+  const getHardWins   = () => { try { return parseInt(localStorage.getItem(LS_HARD_WINS)||'0',10)||0; } catch { return 0; } };
+
+  function revealOniButton() {
+    document.querySelector('.oni-btn')?.classList.add('unlocked');
+  }
+
+  function showOniReveal() {
+    if (document.querySelector('.oni-reveal')) return;
+    const el=document.createElement('div');
+    el.className='oni-reveal';
+    el.innerHTML='<div class="oni-reveal-inner"><div class="oni-kanji">鬼</div><div class="oni-sub">強敵、出現</div></div>';
+    document.body.appendChild(el);
+    el.addEventListener('animationend',()=>el.remove(),{once:true});
+    setTimeout(()=>el.remove(),3800);
+  }
+
+  function registerHardWin() {
+    if (isOniUnlocked()) return;
+    let wins=getHardWins()+1;
+    try { localStorage.setItem(LS_HARD_WINS,String(wins)); } catch {}
+    if (wins>=ONI_WINS_NEEDED) {
+      try { localStorage.setItem(LS_ONI_UNLOCKED,'1'); } catch {}
+      revealOniButton();
+      showOniReveal();
+    }
+  }
+
   function endGame() {
     state.gameOver=true; renderBoard();
     const {black,white}=countPieces(state.board);
+    // 「強」CPU に人間が勝ったら鬼レベル解放カウント
+    if (state.mode==='cpu' && state.cpuDifficulty==='hard') {
+      const humanColor=opponent(state.cpuColor);
+      const humanWon=(humanColor===BLACK && black>white)||(humanColor===WHITE && white>black);
+      if (humanWon) registerHardWin();
+    }
     let title;
     if (black>white)       title='闇の勝利！';
     else if (white>black)  title='光の勝利！';
@@ -1529,6 +1718,7 @@ footer {
     $('btn-menu').addEventListener('click',  backToMenu);
     $('btn-rematch').addEventListener('click',   resetGame);
     $('btn-back-menu').addEventListener('click', backToMenu);
+    if (isOniUnlocked()) revealOniButton(); // 解放済みユーザーには鬼ボタンを表示
     state.board=createBoard(); renderBoard();
   }
 
@@ -1540,7 +1730,7 @@ footer {
 // ============================================================
 //  VERSION
 // ============================================================
-const APP_VERSION = 'v1.14.4';
+const APP_VERSION = 'v1.15.0';
 (function() {
   const el = document.getElementById('version-badge');
   if (el) el.textContent = APP_VERSION;
